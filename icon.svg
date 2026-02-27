@@ -1,17 +1,1 @@
-<svg width="512" height="512" viewBox="0 0 512 512"
-xmlns="http://www.w3.org/2000/svg">
 
-  <!-- Background -->
-  <rect width="512" height="512" rx="110" fill="#000000"/>
-
-  <!-- Road -->
-  <rect x="176" y="60" width="160" height="392"
-        rx="70" fill="#1c1c1e"/>
-
-  <!-- Lane divider -->
-  <rect x="248" y="90" width="16" height="60" fill="#ffffff"/>
-  <rect x="248" y="190" width="16" height="60" fill="#ffffff"/>
-  <rect x="248" y="290" width="16" height="60" fill="#ffffff"/>
-  <rect x="248" y="390" width="16" height="60" fill="#ffffff"/>
-
-</svg>
