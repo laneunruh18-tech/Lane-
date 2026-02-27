@@ -5,8 +5,6 @@
   <title>Lane</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#f2f2f7" />
-
-  <!-- Keep manifest (optional). No logo/splash shown in the UI. -->
   <link rel="manifest" href="manifest.json" />
 
   <style>
@@ -39,25 +37,23 @@
       transform:translateY(6px);
       animation:in .28s ease-out forwards;
     }
-    @keyframes in{
-      to { opacity:1; transform:translateY(0); }
-    }
+    @keyframes in{ to { opacity:1; transform:translateY(0); } }
 
     header{
-      text-align:left;
       margin:6px 0 12px;
       padding:0 2px;
     }
-    h1{
+    #bigTitle{
       margin:0;
-      font-size:40px;
-      letter-spacing:-0.7px;
+      font-size:44px;
+      letter-spacing:-0.9px;
+      font-weight:900;
     }
-    .sub{
+    #bigSub{
       margin:6px 0 0;
       color:var(--muted);
       font-size:13px;
-      font-weight:600;
+      font-weight:700;
     }
 
     /* Tabs */
@@ -73,7 +69,7 @@
       border:1px solid var(--line);
       background:rgba(255,255,255,.75);
       color:rgba(17,17,17,.75);
-      font-weight:800;
+      font-weight:900;
       font-size:13px;
       cursor:pointer;
       user-select:none;
@@ -153,7 +149,7 @@
       border:1px solid var(--line);
       background:rgba(17,17,17,.04);
       color:#111;
-      font-weight:850;
+      font-weight:900;
       font-size:12px;
       cursor:pointer;
       user-select:none;
@@ -168,7 +164,7 @@
       gap:10px;
       color:var(--muted);
       font-size:12px;
-      font-weight:700;
+      font-weight:800;
       align-items:center;
     }
 
@@ -250,13 +246,13 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:-0.2px;
     }
     .text.done{
       text-decoration:line-through;
       opacity:.42;
-      font-weight:750;
+      font-weight:800;
     }
     .subrow{
       margin-top:4px;
@@ -266,14 +262,14 @@
       gap:8px;
       flex-wrap:wrap;
       align-items:center;
-      font-weight:700;
+      font-weight:800;
     }
     .badge{
       padding:5px 8px;
       border-radius:999px;
       border:1px solid var(--line);
       background:rgba(17,17,17,.04);
-      font-weight:850;
+      font-weight:900;
       font-size:11px;
     }
     .badge.due{
@@ -296,7 +292,7 @@
       text-align:center;
       color:var(--muted);
       margin:26px 0 0;
-      font-weight:800;
+      font-weight:900;
     }
 
     .toast{
@@ -319,8 +315,8 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Lane</h1>
-      <div class="sub"> Your reminders.</div>
+      <h1 id="bigTitle">Today</h1>
+      <div id="bigSub"></div>
     </header>
 
     <div class="tabs" id="tabs"></div>
@@ -493,8 +489,32 @@ function viewItems(){
   if(currentView === "done"){
     return items.filter(r => r.done);
   }
-  // all = all open
+  // all open
   return items.filter(r => !r.done);
+}
+
+/* ========= Big header ========= */
+function setBigHeader(){
+  const titleEl = document.getElementById("bigTitle");
+  const subEl = document.getElementById("bigSub");
+
+  const map = { today:"Today", upcoming:"Upcoming", all:"All", done:"Completed" };
+  titleEl.innerText = map[currentView] || "Today";
+
+  const d = new Date();
+  const dateText = d.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+
+  const openCount = reminders.filter(r => !r.done).length;
+  const dueTodayCount = reminders.filter(r =>
+    !r.done && r.dueAt !== null && r.dueAt >= startOfToday() && r.dueAt <= endOfToday()
+  ).length;
+
+  if(currentView === "done"){
+    const doneCount = reminders.filter(r => r.done).length;
+    subEl.innerText = `${dateText} • ${doneCount} completed`;
+  } else {
+    subEl.innerText = `${dateText} • ${openCount} open • ${dueTodayCount} due today`;
+  }
 }
 
 /* ========= Quick chips ========= */
@@ -567,8 +587,7 @@ function openSwipe(card, OPEN_X){
   card.dataset.open = "1";
   setX(card, OPEN_X, true);
 }
-
-function attachSwipe(card, onDelete){
+function attachSwipe(card){
   let startX = 0;
   let baseX = 0;
   let dragging = false;
@@ -601,17 +620,15 @@ function attachSwipe(card, onDelete){
     else closeSwipe(card);
   });
 
-  // tap card closes if open
-  card.addEventListener("click",(e)=>{
+  card.addEventListener("click",()=>{
     if(card.dataset.open === "1") closeSwipe(card);
   });
-
-  onDelete && (card.__onDelete = onDelete);
 }
 
 function render(){
   renderTabs();
   buildQuickChips();
+  setBigHeader();
   updateCountLine();
 
   const list = document.getElementById("list");
@@ -633,7 +650,6 @@ function render(){
     const card = document.createElement("div");
     card.className = "item";
     card.dataset.open = "0";
-    card.dataset.rowId = r.id;
     card.setAttribute("data-row-id", r.id);
 
     const circle = document.createElement("div");
@@ -730,7 +746,7 @@ document.getElementById("textInput").addEventListener("keydown",(e)=>{
   if(e.key === "Enter") addReminder();
 });
 
-/* ========= Reminder ticker (best-effort) ========= */
+/* ========= Reminder ticker (best-effort while app is open) ========= */
 function ensureTicker(){
   clearInterval(window.__laneTicker);
   window.__laneTicker = setInterval(()=>{
@@ -747,7 +763,7 @@ function ensureTicker(){
       const title = "Lane Reminder";
       const body = `${r.text} • ${fmtWhen(r.dueAt)}`;
       fireReminder(title, body);
-      toast("Reminder fired 🔔");
+      toast("Reminder 🔔");
     });
   }, 1000);
 }
