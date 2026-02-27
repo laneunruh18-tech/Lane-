@@ -1,178 +1,449 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Lane</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lane</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f2f2f7;
-  margin: 0;
-  padding: 20px;
-}
+  <style>
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#f2f2f7;
+      margin:0;
+      padding:18px 16px 30px;
+    }
+    h1{
+      text-align:center;
+      margin:10px 0 18px;
+      font-size:42px;
+      letter-spacing:-0.5px;
+    }
 
-h1 {
-  text-align: center;
-  font-size: 40px;
-}
+    .panel{
+      max-width:560px;
+      margin:0 auto;
+    }
 
-.inputRow {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+    .inputRow{
+      display:flex;
+      gap:10px;
+      margin-bottom:14px;
+    }
 
-input {
-  flex: 1;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 12px;
-  border: none;
-}
+    input{
+      flex:1;
+      padding:14px 14px;
+      font-size:16px;
+      border-radius:14px;
+      border:none;
+      outline:none;
+      background:white;
+    }
 
-button {
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  background: black;
-  color: white;
-  font-weight: bold;
-}
+    .mins{
+      width:120px;
+      text-align:center;
+    }
 
-.item {
-  background: white;
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+    button{
+      padding:14px 16px;
+      font-size:16px;
+      border-radius:14px;
+      border:none;
+      background:#111;
+      color:white;
+      font-weight:700;
+      cursor:pointer;
+    }
 
-.left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+    .hint{
+      font-size:12px;
+      opacity:0.7;
+      margin:6px 2px 16px;
+      text-align:center;
+    }
 
-.circle {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 2px solid #999;
-  cursor: pointer;
-}
+    /* Swipe container */
+    .swipeWrap{
+      position:relative;
+      margin:10px 0;
+      border-radius:16px;
+      overflow:hidden;
+    }
 
-.circle.done {
-  background: black;
-  border-color: black;
-}
+    /* Delete background */
+    .deleteBg{
+      position:absolute;
+      inset:0;
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      background:#ff3b30;
+      padding-right:14px;
+      color:white;
+      font-weight:800;
+    }
 
-.text.done {
-  text-decoration: line-through;
-  opacity: 0.5;
-}
+    /* Foreground card that moves */
+    .item{
+      position:relative;
+      background:white;
+      border-radius:16px;
+      padding:14px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      transform:translateX(0px);
+      transition:transform 120ms ease-out;
+      will-change:transform;
+    }
 
-.delete {
-  background: transparent;
-  color: red;
-  font-size: 14px;
-}
-</style>
+    .left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+      flex:1;
+    }
+
+    .circle{
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      border:2px solid #999;
+      flex:0 0 auto;
+      cursor:pointer;
+    }
+    .circle.done{
+      background:#111;
+      border-color:#111;
+    }
+
+    .text{
+      font-size:18px;
+      line-height:1.2;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      user-select:none;
+    }
+    .text.done{
+      text-decoration:line-through;
+      opacity:0.45;
+    }
+
+    .meta{
+      font-size:12px;
+      opacity:0.6;
+      margin-top:2px;
+    }
+
+    .right{
+      flex:0 0 auto;
+      font-size:12px;
+      opacity:0.6;
+      text-align:right;
+      user-select:none;
+      min-width:72px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      background:rgba(17,17,17,0.92);
+      color:white;
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:13px;
+      max-width:90vw;
+      display:none;
+      z-index:9999;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="panel">
+    <h1>Lane</h1>
 
-<h1>Lane</h1>
+    <div class="inputRow">
+      <input id="input" placeholder="New Reminder">
+      <input id="mins" class="mins" inputmode="numeric" placeholder="Min (opt)">
+      <button onclick="addReminder()">Add</button>
+    </div>
 
-<div class="inputRow">
-  <input id="input" placeholder="New Reminder">
-  <button onclick="addReminder()">Add</button>
-</div>
+    <div class="hint">
+      Tap the circle to complete. Swipe left to delete. “Min” reminds you later (best effort).
+    </div>
 
-<div id="list"></div>
+    <div id="list"></div>
+  </div>
 
-<script>
+  <div id="toast" class="toast"></div>
 
-let reminders =
-JSON.parse(localStorage.getItem("laneReminders")) || [];
+  <script>
+    // Reminder item:
+    // { id, text, done, remindAt (ms timestamp or null), createdAt }
+    let reminders = JSON.parse(localStorage.getItem("laneReminders")) || [];
 
-function save() {
-  localStorage.setItem(
-    "laneReminders",
-    JSON.stringify(reminders)
-  );
-}
+    function save(){
+      localStorage.setItem("laneReminders", JSON.stringify(reminders));
+    }
 
-function render() {
-  const list = document.getElementById("list");
-  list.innerHTML = "";
+    function toast(msg){
+      const t = document.getElementById("toast");
+      t.innerText = msg;
+      t.style.display = "block";
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(()=> t.style.display="none", 2400);
+    }
 
-  reminders.forEach((item, index) => {
+    function supportsNotifications(){
+      return typeof window.Notification !== "undefined";
+    }
 
-    const row = document.createElement("div");
-    row.className = "item";
+    async function ensureNotificationPermission(){
+      if(!supportsNotifications()) return false;
+      if(Notification.permission === "granted") return true;
+      if(Notification.permission === "denied") return false;
 
-    const left = document.createElement("div");
-    left.className = "left";
+      try{
+        const perm = await Notification.requestPermission();
+        return perm === "granted";
+      }catch(e){
+        return false;
+      }
+    }
 
-    const circle = document.createElement("div");
-    circle.className =
-      "circle" + (item.done ? " done" : "");
+    function formatTime(ms){
+      const d = new Date(ms);
+      let h = d.getHours();
+      let m = d.getMinutes();
+      const ampm = h >= 12 ? "PM" : "AM";
+      h = h % 12; if(h===0) h = 12;
+      const mm = String(m).padStart(2,"0");
+      return `${h}:${mm} ${ampm}`;
+    }
 
-    const text = document.createElement("div");
-    text.className =
-      "text" + (item.done ? " done" : "");
-    text.innerText = item.text;
+    // Best-effort reminder scheduler while the page is open.
+    function scheduleTimers(){
+      clearInterval(window.__laneTicker);
 
-    circle.onclick = () => {
-      reminders[index].done =
-        !reminders[index].done;
+      window.__laneTicker = setInterval(async ()=>{
+        const now = Date.now();
+        let changed = false;
+
+        for (let i=0; i<reminders.length; i++){
+          const r = reminders[i];
+          if(r.remindAt && now >= r.remindAt){
+            // Fire reminder once, then clear remindAt
+            const title = "Lane Reminder";
+            const body = r.text;
+
+            const ok = await ensureNotificationPermission();
+            if(ok){
+              try{
+                new Notification(title, { body });
+              }catch(e){
+                alert(`Lane Reminder:\n${body}`);
+              }
+            }else{
+              // iOS Chrome/bookmarks usually lands here
+              alert(`Lane Reminder:\n${body}`);
+              toast("Tip: iPhone notifications require Safari Home Screen install.");
+            }
+
+            reminders[i].remindAt = null;
+            changed = true;
+          }
+        }
+
+        if(changed){
+          save();
+          render();
+        }
+      }, 1000);
+    }
+
+    function render(){
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      reminders.forEach((r, index)=>{
+        const wrap = document.createElement("div");
+        wrap.className = "swipeWrap";
+
+        const bg = document.createElement("div");
+        bg.className = "deleteBg";
+        bg.innerText = "Delete";
+
+        const card = document.createElement("div");
+        card.className = "item";
+        card.dataset.open = "0";
+
+        const left = document.createElement("div");
+        left.className = "left";
+
+        const circle = document.createElement("div");
+        circle.className = "circle" + (r.done ? " done" : "");
+
+        const textBox = document.createElement("div");
+        textBox.style.minWidth = "0";
+        textBox.style.flex = "1";
+
+        const text = document.createElement("div");
+        text.className = "text" + (r.done ? " done" : "");
+        text.innerText = r.text;
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        if(r.remindAt){
+          meta.innerText = `Remind at ${formatTime(r.remindAt)}`;
+        }else{
+          meta.innerText = "";
+        }
+
+        textBox.appendChild(text);
+        if(r.remindAt) textBox.appendChild(meta);
+
+        const right = document.createElement("div");
+        right.className = "right";
+        right.innerText = r.remindAt ? "⏰" : "";
+
+        circle.onclick = ()=>{
+          reminders[index].done = !reminders[index].done;
+          save();
+          render();
+        };
+
+        // Delete action (tap red area)
+        bg.onclick = ()=>{
+          reminders.splice(index,1);
+          save();
+          render();
+        };
+
+        left.appendChild(circle);
+        left.appendChild(textBox);
+
+        card.appendChild(left);
+        card.appendChild(right);
+
+        wrap.appendChild(bg);
+        wrap.appendChild(card);
+        list.appendChild(wrap);
+
+        // --- Swipe gestures ---
+        let startX = 0;
+        let currentX = 0;
+        let dragging = false;
+        const OPEN_X = -92; // how far left to reveal delete
+
+        function setX(x, animate){
+          if(animate) card.style.transition = "transform 120ms ease-out";
+          else card.style.transition = "none";
+          card.style.transform = `translateX(${x}px)`;
+        }
+
+        function closeSwipe(){
+          card.dataset.open = "0";
+          setX(0, true);
+        }
+
+        function openSwipe(){
+          card.dataset.open = "1";
+          setX(OPEN_X, true);
+        }
+
+        // If user taps elsewhere, close any open cards
+        card.addEventListener("click", (e)=>{
+          // If it's already open and they tap the card, close it (but don't interfere with circle)
+          if(e.target === circle) return;
+          if(card.dataset.open === "1"){
+            closeSwipe();
+          }
+        });
+
+        card.addEventListener("touchstart", (e)=>{
+          if(e.touches.length !== 1) return;
+          dragging = true;
+          startX = e.touches[0].clientX;
+          currentX = card.dataset.open === "1" ? OPEN_X : 0;
+          card.style.transition = "none";
+        }, { passive: true });
+
+        card.addEventListener("touchmove", (e)=>{
+          if(!dragging) return;
+          const x = e.touches[0].clientX;
+          const dx = x - startX;
+
+          // Only allow left swipe to open, right swipe to close
+          let next = currentX + dx;
+          if(next > 0) next = 0;
+          if(next < OPEN_X) next = OPEN_X;
+
+          setX(next, false);
+        }, { passive: true });
+
+        card.addEventListener("touchend", ()=>{
+          if(!dragging) return;
+          dragging = false;
+
+          // Decide open/close based on where it ended
+          const matrix = new WebKitCSSMatrix(getComputedStyle(card).transform);
+          const x = matrix.m41; // current translateX
+          if(x < OPEN_X / 2) openSwipe();
+          else closeSwipe();
+        });
+      });
+
+      scheduleTimers();
+    }
+
+    function addReminder(){
+      const input = document.getElementById("input");
+      const minsInput = document.getElementById("mins");
+
+      const text = input.value.trim();
+      if(!text) return;
+
+      let remindAt = null;
+      const mins = parseInt(minsInput.value, 10);
+      if(!isNaN(mins) && mins > 0){
+        remindAt = Date.now() + mins * 60 * 1000;
+
+        // Try to request permission early (best effort)
+        ensureNotificationPermission().then(ok=>{
+          if(!ok){
+            toast("iPhone push notifications need Safari Home Screen install. Using in-app alert.");
+          }
+        });
+      }
+
+      reminders.push({
+        id: crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
+        text,
+        done:false,
+        remindAt,
+        createdAt: Date.now()
+      });
+
       save();
       render();
-    };
 
-    const del = document.createElement("button");
-    del.className = "delete";
-    del.innerText = "Delete";
+      input.value = "";
+      minsInput.value = "";
+      input.focus();
+    }
 
-    del.onclick = () => {
-      reminders.splice(index,1);
-      save();
-      render();
-    };
+    // Enter key adds
+    document.getElementById("input").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") addReminder();
+    });
 
-    left.appendChild(circle);
-    left.appendChild(text);
-
-    row.appendChild(left);
-    row.appendChild(del);
-
-    list.appendChild(row);
-  });
-}
-
-function addReminder() {
-  const input =
-    document.getElementById("input");
-
-  const text = input.value.trim();
-  if (!text) return;
-
-  reminders.push({
-    text:text,
-    done:false
-  });
-
-  save();
-  render();
-  input.value="";
-}
-
-render();
-
-</script>
-
+    render();
+  </script>
 </body>
 </html>
