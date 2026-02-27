@@ -59,16 +59,37 @@ function addReminder() {
 renderReminders();
 
 </script>
-  let text = document.getElementById("reminderInput").value;
-  if(text==="") return;
+  <script>
+let reminders = JSON.parse(localStorage.getItem("laneReminders")) || [];
 
-  let div = document.createElement("div");
-  div.className="reminder";
-  div.innerText=text;
+function renderReminders() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
 
-  document.getElementById("list").appendChild(div);
-  document.getElementById("reminderInput").value="";
+  reminders.forEach((text) => {
+    const div = document.createElement("div");
+    div.className = "reminder";
+    div.innerText = text;
+    list.appendChild(div);
+  });
 }
+
+function addReminder() {
+  const input = document.getElementById("reminderInput");
+  const text = input.value.trim();
+  if (text === "") return;
+
+  reminders.push(text);
+  localStorage.setItem("laneReminders", JSON.stringify(reminders));
+
+  renderReminders();
+  input.value = "";
+}
+
+renderReminders();
+</script>
+
+  
 </script>
 
 </body>
