@@ -32,7 +32,33 @@ input, button {
 <div id="list"></div>
 
 <script>
+
+let reminders = JSON.parse(localStorage.getItem("laneReminders")) || [];
+
+function renderReminders() {
+  document.getElementById("list").innerHTML = "";
+  reminders.forEach((text, index) => {
+    let div = document.createElement("div");
+    div.className="reminder";
+    div.innerText = text;
+    document.getElementById("list").appendChild(div);
+  });
+}
+
 function addReminder() {
+  let text = document.getElementById("reminderInput").value;
+  if(text==="") return;
+
+  reminders.push(text);
+  localStorage.setItem("laneReminders", JSON.stringify(reminders));
+
+  renderReminders();
+  document.getElementById("reminderInput").value="";
+}
+
+renderReminders();
+
+</script>
   let text = document.getElementById("reminderInput").value;
   if(text==="") return;
 
