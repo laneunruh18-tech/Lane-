@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lane</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #111;
+  color: white;
+}
+input, button {
+  padding: 12px;
+  margin: 8px;
+  font-size: 16px;
+}
+.reminder {
+  margin: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Lane ✅</h1>
+<p>My Reminders</p>
+
+<input id="reminderInput" placeholder="Enter reminder">
+<button onclick="addReminder()">Add</button>
+
+<div id="list"></div>
+
+<script>
+function addReminder() {
+  let text = document.getElementById("reminderInput").value;
+  if(text==="") return;
+
+  let div = document.createElement("div");
+  div.className="reminder";
+  div.innerText=text;
+
+  document.getElementById("list").appendChild(div);
+  document.getElementById("reminderInput").value="";
+}
+</script>
+
+</body>
+</html>
