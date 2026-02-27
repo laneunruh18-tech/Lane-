@@ -1,159 +1,309 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8" />
   <title>Lane</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f2f2f7" />
+
+  <!-- Optional install polish (will be used if supported) -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-      background:#f2f2f7;
-      margin:0;
-      padding:18px 16px 30px;
-    }
-    h1{
-      text-align:center;
-      margin:10px 0 18px;
-      font-size:42px;
-      letter-spacing:-0.5px;
+    :root{
+      --bg:#f2f2f7;
+      --card:#ffffff;
+      --text:#111;
+      --muted:rgba(17,17,17,.55);
+      --line:rgba(17,17,17,.08);
+      --danger:#ff3b30;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --radius:18px;
     }
 
-    .panel{
-      max-width:560px;
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      padding:18px 16px 34px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .wrap{
+      max-width:640px;
       margin:0 auto;
     }
 
-    .inputRow{
+    header{
+      text-align:center;
+      margin:8px 0 14px;
+    }
+    h1{
+      margin:6px 0 6px;
+      font-size:44px;
+      letter-spacing:-0.6px;
+    }
+    .sub{
+      margin:0 0 12px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    /* Tabs */
+    .tabs{
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin:10px 0 14px;
+    }
+    .tab{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.75);
+      color:rgba(17,17,17,.75);
+      font-weight:700;
+      font-size:13px;
+      cursor:pointer;
+      transition:transform .12s ease, background .2s ease, color .2s ease;
+      user-select:none;
+    }
+    .tab:active{ transform:scale(.98); }
+    .tab.active{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+
+    /* Add panel */
+    .panel{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      margin:0 0 14px;
+    }
+    .row{
       display:flex;
       gap:10px;
-      margin-bottom:14px;
+      align-items:center;
+      flex-wrap:wrap;
     }
 
-    input{
+    input[type="text"]{
       flex:1;
+      min-width:220px;
       padding:14px 14px;
-      font-size:16px;
       border-radius:14px;
-      border:none;
+      border:1px solid var(--line);
+      font-size:16px;
       outline:none;
-      background:white;
+      background:#fff;
     }
-
-    .mins{
-      width:120px;
-      text-align:center;
-    }
-
-    button{
-      padding:14px 16px;
-      font-size:16px;
+    input[type="datetime-local"]{
+      padding:14px 12px;
       border-radius:14px;
-      border:none;
+      border:1px solid var(--line);
+      font-size:14px;
+      outline:none;
+      background:#fff;
+    }
+
+    .btn{
+      padding:14px 16px;
+      border-radius:14px;
+      border:0;
       background:#111;
-      color:white;
-      font-weight:700;
+      color:#fff;
+      font-weight:800;
       cursor:pointer;
+      transition:transform .12s ease, opacity .2s ease;
+      user-select:none;
+    }
+    .btn:active{ transform:scale(.98); }
+    .btn.secondary{
+      background:rgba(17,17,17,.08);
+      color:#111;
+      font-weight:800;
+      border:1px solid var(--line);
     }
 
-    .hint{
+    .quick{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .chip{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(17,17,17,.04);
+      color:#111;
+      font-weight:750;
       font-size:12px;
-      opacity:0.7;
-      margin:6px 2px 16px;
-      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      transition:transform .12s ease, background .2s ease;
+    }
+    .chip:active{ transform:scale(.98); }
+    .chip.on{
+      background:#111;
+      color:#fff;
+      border-color:#111;
     }
 
-    /* Swipe container */
+    .metaLine{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    /* List */
+    #list{
+      margin-top:10px;
+    }
+
     .swipeWrap{
       position:relative;
-      margin:10px 0;
-      border-radius:16px;
+      border-radius:var(--radius);
       overflow:hidden;
+      margin:10px 0;
     }
-
-    /* Delete background */
     .deleteBg{
       position:absolute;
       inset:0;
+      background:var(--danger);
       display:flex;
-      justify-content:flex-end;
       align-items:center;
-      background:#ff3b30;
-      padding-right:14px;
-      color:white;
-      font-weight:800;
+      justify-content:flex-end;
+      padding-right:16px;
+      color:#fff;
+      font-weight:900;
+      letter-spacing:.2px;
+      user-select:none;
     }
 
-    /* Foreground card that moves */
     .item{
       position:relative;
-      background:white;
-      border-radius:16px;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:0 6px 18px rgba(0,0,0,.06);
       padding:14px 14px;
       display:flex;
       align-items:center;
-      justify-content:space-between;
       gap:12px;
       transform:translateX(0px);
-      transition:transform 120ms ease-out;
-      will-change:transform;
+      transition:transform 140ms ease, opacity 160ms ease;
+      will-change:transform, opacity;
     }
-
-    .left{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:0;
-      flex:1;
+    .item.removing{
+      opacity:0;
+      transform:translateX(-12px);
     }
 
     .circle{
-      width:22px;
-      height:22px;
+      width:24px;
+      height:24px;
       border-radius:50%;
-      border:2px solid #999;
+      border:2px solid rgba(17,17,17,.35);
       flex:0 0 auto;
+      display:grid;
+      place-items:center;
       cursor:pointer;
+      user-select:none;
+      transition:transform .12s ease, background .2s ease, border-color .2s ease;
     }
+    .circle:active{ transform:scale(.96); }
     .circle.done{
       background:#111;
       border-color:#111;
     }
+    .check{
+      width:10px; height:10px;
+      border-right:2px solid #fff;
+      border-bottom:2px solid #fff;
+      transform:rotate(45deg);
+      margin-top:-1px;
+      opacity:0;
+    }
+    .circle.done .check{ opacity:1; }
 
+    .content{
+      min-width:0;
+      flex:1;
+    }
     .text{
       font-size:18px;
-      line-height:1.2;
+      line-height:1.15;
+      white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      white-space:nowrap;
-      user-select:none;
+      font-weight:750;
+      letter-spacing:-0.2px;
     }
     .text.done{
       text-decoration:line-through;
-      opacity:0.45;
+      opacity:.42;
+      font-weight:700;
     }
-
-    .meta{
+    .subrow{
+      margin-top:4px;
       font-size:12px;
-      opacity:0.6;
-      margin-top:2px;
+      color:var(--muted);
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
     }
-
+    .badge{
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(17,17,17,.04);
+      font-weight:800;
+      font-size:11px;
+    }
+    .badge.due{
+      background:rgba(255,149,0,.10);
+      border-color:rgba(255,149,0,.25);
+    }
+    .badge.over{
+      background:rgba(255,59,48,.10);
+      border-color:rgba(255,59,48,.25);
+    }
     .right{
       flex:0 0 auto;
-      font-size:12px;
-      opacity:0.6;
-      text-align:right;
+      color:rgba(17,17,17,.45);
+      font-weight:900;
       user-select:none;
-      min-width:72px;
     }
 
+    .empty{
+      text-align:center;
+      color:var(--muted);
+      margin:26px 0 0;
+      font-weight:700;
+    }
+
+    /* Toast */
     .toast{
       position:fixed;
       left:50%;
       transform:translateX(-50%);
       bottom:18px;
-      background:rgba(17,17,17,0.92);
-      color:white;
+      background:rgba(17,17,17,.92);
+      color:#fff;
       padding:10px 12px;
       border-radius:12px;
       font-size:13px;
@@ -165,285 +315,529 @@
 </head>
 
 <body>
-  <div class="panel">
-    <h1>Lane</h1>
+  <div class="wrap">
+    <header>
+      <h1>Lane</h1>
+      <div class="sub">Apple-style reminders, made by you.</div>
+    </header>
 
-    <div class="inputRow">
-      <input id="input" placeholder="New Reminder">
-      <input id="mins" class="mins" inputmode="numeric" placeholder="Min (opt)">
-      <button onclick="addReminder()">Add</button>
-    </div>
+    <div class="tabs" id="tabs"></div>
 
-    <div class="hint">
-      Tap the circle to complete. Swipe left to delete. “Min” reminds you later (best effort).
+    <div class="panel">
+      <div class="row">
+        <input id="textInput" type="text" placeholder="New Reminder" autocomplete="off" />
+        <input id="dtInput" type="datetime-local" />
+        <button class="btn" onclick="addReminder()">Add</button>
+      </div>
+
+      <div class="quick" id="quick"></div>
+
+      <div class="metaLine">
+        <div id="countLine"></div>
+        <button class="btn secondary" onclick="requestNotifs()">Notifications</button>
+      </div>
     </div>
 
     <div id="list"></div>
+    <div id="empty" class="empty" style="display:none;">No reminders here 🧼</div>
   </div>
 
   <div id="toast" class="toast"></div>
 
-  <script>
-    // Reminder item:
-    // { id, text, done, remindAt (ms timestamp or null), createdAt }
-    let reminders = JSON.parse(localStorage.getItem("laneReminders")) || [];
+<script>
+/* =========================
+   Data + Storage
+========================= */
+let reminders = JSON.parse(localStorage.getItem("laneReminders")) || [];
+// Item shape:
+// { id, text, done, dueAt: number|null, createdAt: number }
 
-    function save(){
-      localStorage.setItem("laneReminders", JSON.stringify(reminders));
-    }
+function save(){
+  localStorage.setItem("laneReminders", JSON.stringify(reminders));
+}
 
-    function toast(msg){
-      const t = document.getElementById("toast");
-      t.innerText = msg;
-      t.style.display = "block";
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(()=> t.style.display="none", 2400);
-    }
+/* =========================
+   Utilities
+========================= */
+function haptic(ms=12){
+  // Works on some devices/browsers. Safe no-op if blocked.
+  try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
+}
 
-    function supportsNotifications(){
-      return typeof window.Notification !== "undefined";
-    }
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.display = "block";
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> t.style.display="none", 2200);
+}
 
-    async function ensureNotificationPermission(){
-      if(!supportsNotifications()) return false;
-      if(Notification.permission === "granted") return true;
-      if(Notification.permission === "denied") return false;
+function nowMs(){ return Date.now(); }
 
-      try{
-        const perm = await Notification.requestPermission();
-        return perm === "granted";
-      }catch(e){
-        return false;
-      }
-    }
+function startOfToday(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d.getTime();
+}
+function startOfTomorrow(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate()+1);
+  return d.getTime();
+}
+function endOfToday(){
+  const d = new Date();
+  d.setHours(23,59,59,999);
+  return d.getTime();
+}
 
-    function formatTime(ms){
-      const d = new Date(ms);
-      let h = d.getHours();
-      let m = d.getMinutes();
-      const ampm = h >= 12 ? "PM" : "AM";
-      h = h % 12; if(h===0) h = 12;
-      const mm = String(m).padStart(2,"0");
-      return `${h}:${mm} ${ampm}`;
-    }
+function fmtWhen(ms){
+  const d = new Date(ms);
+  const now = new Date();
+  const sameDay =
+    d.getFullYear()===now.getFullYear() &&
+    d.getMonth()===now.getMonth() &&
+    d.getDate()===now.getDate();
 
-    // Best-effort reminder scheduler while the page is open.
-    function scheduleTimers(){
-      clearInterval(window.__laneTicker);
+  const hh = d.getHours();
+  const mm = String(d.getMinutes()).padStart(2,"0");
+  const ampm = hh>=12 ? "PM":"AM";
+  const h12 = (hh%12)||12;
+  const time = `${h12}:${mm} ${ampm}`;
 
-      window.__laneTicker = setInterval(async ()=>{
-        const now = Date.now();
-        let changed = false;
+  if(sameDay) return `Today • ${time}`;
+  // Tomorrow?
+  const tmr = new Date();
+  tmr.setDate(tmr.getDate()+1);
+  const isTomorrow =
+    d.getFullYear()===tmr.getFullYear() &&
+    d.getMonth()===tmr.getMonth() &&
+    d.getDate()===tmr.getDate();
 
-        for (let i=0; i<reminders.length; i++){
-          const r = reminders[i];
-          if(r.remindAt && now >= r.remindAt){
-            // Fire reminder once, then clear remindAt
-            const title = "Lane Reminder";
-            const body = r.text;
+  if(isTomorrow) return `Tomorrow • ${time}`;
 
-            const ok = await ensureNotificationPermission();
-            if(ok){
-              try{
-                new Notification(title, { body });
-              }catch(e){
-                alert(`Lane Reminder:\n${body}`);
-              }
-            }else{
-              // iOS Chrome/bookmarks usually lands here
-              alert(`Lane Reminder:\n${body}`);
-              toast("Tip: iPhone notifications require Safari Home Screen install.");
-            }
+  const mon = d.toLocaleString(undefined, { month:"short" });
+  return `${mon} ${d.getDate()} • ${time}`;
+}
 
-            reminders[i].remindAt = null;
-            changed = true;
-          }
-        }
+function parseLocalDT(value){
+  // value like "2026-02-27T15:30" in local time
+  if(!value) return null;
+  const ms = new Date(value).getTime();
+  return isNaN(ms) ? null : ms;
+}
 
-        if(changed){
-          save();
-          render();
-        }
-      }, 1000);
-    }
+function setDTInput(ms){
+  // set datetime-local input from ms
+  const el = document.getElementById("dtInput");
+  if(ms === null){
+    el.value = "";
+    return;
+  }
+  const d = new Date(ms);
+  const pad = (n)=> String(n).padStart(2,"0");
+  const v = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  el.value = v;
+}
 
-    function render(){
-      const list = document.getElementById("list");
-      list.innerHTML = "";
+/* =========================
+   Notifications (best-effort)
+========================= */
+function supportsNotifications(){
+  return typeof window.Notification !== "undefined";
+}
 
-      reminders.forEach((r, index)=>{
-        const wrap = document.createElement("div");
-        wrap.className = "swipeWrap";
+async function requestNotifs(){
+  if(!supportsNotifications()){
+    toast("Notifications not supported here.");
+    return;
+  }
+  if(Notification.permission === "granted"){
+    toast("Notifications already allowed ✅");
+    return;
+  }
+  if(Notification.permission === "denied"){
+    toast("Notifications are blocked in settings.");
+    return;
+  }
+  try{
+    const perm = await Notification.requestPermission();
+    if(perm === "granted") toast("Notifications allowed ✅");
+    else toast("Okay—no notifications.");
+  }catch(e){
+    toast("Couldn’t request permission.");
+  }
+}
 
-        const bg = document.createElement("div");
-        bg.className = "deleteBg";
-        bg.innerText = "Delete";
+function fireReminder(title, body){
+  // If allowed, use Notification; otherwise in-app alert.
+  if(supportsNotifications() && Notification.permission === "granted"){
+    try{
+      new Notification(title, { body });
+      return;
+    }catch(e){}
+  }
+  // Best-effort fallback while app is open
+  alert(`${title}\n\n${body}`);
+}
 
-        const card = document.createElement("div");
-        card.className = "item";
-        card.dataset.open = "0";
+/* =========================
+   Tabs / Filters
+========================= */
+const VIEWS = [
+  { key:"today", label:"Today" },
+  { key:"upcoming", label:"Upcoming" },
+  { key:"all", label:"All" },
+  { key:"done", label:"Completed" },
+];
 
-        const left = document.createElement("div");
-        left.className = "left";
+let currentView = localStorage.getItem("laneView") || "today";
 
-        const circle = document.createElement("div");
-        circle.className = "circle" + (r.done ? " done" : "");
+function setView(key){
+  currentView = key;
+  localStorage.setItem("laneView", key);
+  render();
+}
 
-        const textBox = document.createElement("div");
-        textBox.style.minWidth = "0";
-        textBox.style.flex = "1";
+function viewItems(){
+  const todayStart = startOfToday();
+  const todayEnd = endOfToday();
+  const tomorrowStart = startOfTomorrow();
 
-        const text = document.createElement("div");
-        text.className = "text" + (r.done ? " done" : "");
-        text.innerText = r.text;
+  const items = reminders.slice();
 
-        const meta = document.createElement("div");
-        meta.className = "meta";
-        if(r.remindAt){
-          meta.innerText = `Remind at ${formatTime(r.remindAt)}`;
-        }else{
-          meta.innerText = "";
-        }
+  // Sort: not-done first, then dueAt soonest, then createdAt
+  items.sort((a,b)=>{
+    if(a.done !== b.done) return a.done ? 1 : -1;
+    const ad = a.dueAt ?? Infinity;
+    const bd = b.dueAt ?? Infinity;
+    if(ad !== bd) return ad - bd;
+    return (a.createdAt||0) - (b.createdAt||0);
+  });
 
-        textBox.appendChild(text);
-        if(r.remindAt) textBox.appendChild(meta);
+  if(currentView === "today"){
+    return items.filter(r => !r.done && r.dueAt !== null && r.dueAt >= todayStart && r.dueAt <= todayEnd);
+  }
+  if(currentView === "upcoming"){
+    return items.filter(r => !r.done && r.dueAt !== null && r.dueAt >= tomorrowStart);
+  }
+  if(currentView === "done"){
+    return items.filter(r => r.done);
+  }
+  // all
+  return items.filter(r => !r.done);
+}
 
-        const right = document.createElement("div");
-        right.className = "right";
-        right.innerText = r.remindAt ? "⏰" : "";
+/* =========================
+   Quick chips
+========================= */
+function buildQuickChips(){
+  const quick = document.getElementById("quick");
+  quick.innerHTML = "";
 
-        circle.onclick = ()=>{
-          reminders[index].done = !reminders[index].done;
-          save();
-          render();
-        };
+  const chips = [
+    { label:"+10 min", fn:()=> setDTInput(nowMs() + 10*60*1000) },
+    { label:"+1 hr", fn:()=> setDTInput(nowMs() + 60*60*1000) },
+    { label:"Tonight 7pm", fn:()=> {
+      const d = new Date();
+      d.setHours(19,0,0,0);
+      setDTInput(d.getTime());
+    }},
+    { label:"Tomorrow 9am", fn:()=> {
+      const d = new Date();
+      d.setDate(d.getDate()+1);
+      d.setHours(9,0,0,0);
+      setDTInput(d.getTime());
+    }},
+    { label:"No time", fn:()=> setDTInput(null) },
+  ];
 
-        // Delete action (tap red area)
-        bg.onclick = ()=>{
-          reminders.splice(index,1);
-          save();
-          render();
-        };
+  chips.forEach(c=>{
+    const el = document.createElement("div");
+    el.className = "chip";
+    el.innerText = c.label;
+    el.onclick = ()=>{ haptic(8); c.fn(); toast(c.label); };
+    quick.appendChild(el);
+  });
+}
 
-        left.appendChild(circle);
-        left.appendChild(textBox);
+/* =========================
+   Swipe + Render
+========================= */
+function renderTabs(){
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+  VIEWS.forEach(v=>{
+    const t = document.createElement("div");
+    t.className = "tab" + (v.key===currentView ? " active" : "");
+    t.innerText = v.label;
+    t.onclick = ()=>{ haptic(6); setView(v.key); };
+    tabs.appendChild(t);
+  });
+}
 
-        card.appendChild(left);
-        card.appendChild(right);
+function updateCountLine(){
+  const totalOpen = reminders.filter(r=>!r.done).length;
+  const dueSoon = reminders.filter(r=>!r.done && r.dueAt !== null && r.dueAt <= endOfToday() && r.dueAt >= startOfToday()).length;
+  const line = document.getElementById("countLine");
+  line.innerText = `${totalOpen} open • ${dueSoon} due today`;
+}
 
-        wrap.appendChild(bg);
-        wrap.appendChild(card);
-        list.appendChild(wrap);
-
-        // --- Swipe gestures ---
-        let startX = 0;
-        let currentX = 0;
-        let dragging = false;
-        const OPEN_X = -92; // how far left to reveal delete
-
-        function setX(x, animate){
-          if(animate) card.style.transition = "transform 120ms ease-out";
-          else card.style.transition = "none";
-          card.style.transform = `translateX(${x}px)`;
-        }
-
-        function closeSwipe(){
-          card.dataset.open = "0";
-          setX(0, true);
-        }
-
-        function openSwipe(){
-          card.dataset.open = "1";
-          setX(OPEN_X, true);
-        }
-
-        // If user taps elsewhere, close any open cards
-        card.addEventListener("click", (e)=>{
-          // If it's already open and they tap the card, close it (but don't interfere with circle)
-          if(e.target === circle) return;
-          if(card.dataset.open === "1"){
-            closeSwipe();
-          }
-        });
-
-        card.addEventListener("touchstart", (e)=>{
-          if(e.touches.length !== 1) return;
-          dragging = true;
-          startX = e.touches[0].clientX;
-          currentX = card.dataset.open === "1" ? OPEN_X : 0;
-          card.style.transition = "none";
-        }, { passive: true });
-
-        card.addEventListener("touchmove", (e)=>{
-          if(!dragging) return;
-          const x = e.touches[0].clientX;
-          const dx = x - startX;
-
-          // Only allow left swipe to open, right swipe to close
-          let next = currentX + dx;
-          if(next > 0) next = 0;
-          if(next < OPEN_X) next = OPEN_X;
-
-          setX(next, false);
-        }, { passive: true });
-
-        card.addEventListener("touchend", ()=>{
-          if(!dragging) return;
-          dragging = false;
-
-          // Decide open/close based on where it ended
-          const matrix = new WebKitCSSMatrix(getComputedStyle(card).transform);
-          const x = matrix.m41; // current translateX
-          if(x < OPEN_X / 2) openSwipe();
-          else closeSwipe();
-        });
-      });
-
-      scheduleTimers();
-    }
-
-    function addReminder(){
-      const input = document.getElementById("input");
-      const minsInput = document.getElementById("mins");
-
-      const text = input.value.trim();
-      if(!text) return;
-
-      let remindAt = null;
-      const mins = parseInt(minsInput.value, 10);
-      if(!isNaN(mins) && mins > 0){
-        remindAt = Date.now() + mins * 60 * 1000;
-
-        // Try to request permission early (best effort)
-        ensureNotificationPermission().then(ok=>{
-          if(!ok){
-            toast("iPhone push notifications need Safari Home Screen install. Using in-app alert.");
-          }
-        });
-      }
-
-      reminders.push({
-        id: crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
-        text,
-        done:false,
-        remindAt,
-        createdAt: Date.now()
-      });
-
+function removeWithAnimation(index){
+  // animate then remove
+  const itemEl = document.querySelector(`[data-row-id="${reminders[index].id}"]`);
+  if(itemEl){
+    itemEl.classList.add("removing");
+    setTimeout(()=>{
+      reminders.splice(index,1);
       save();
       render();
+    }, 170);
+  }else{
+    reminders.splice(index,1);
+    save();
+    render();
+  }
+}
 
-      input.value = "";
-      minsInput.value = "";
-      input.focus();
+function render(){
+  renderTabs();
+  buildQuickChips();
+  updateCountLine();
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  const items = viewItems();
+  const empty = document.getElementById("empty");
+  empty.style.display = items.length ? "none" : "block";
+
+  items.forEach((r)=>{
+    const index = reminders.findIndex(x=>x.id===r.id);
+
+    const wrap = document.createElement("div");
+    wrap.className = "swipeWrap";
+
+    const bg = document.createElement("div");
+    bg.className = "deleteBg";
+    bg.innerText = "Delete";
+
+    const card = document.createElement("div");
+    card.className = "item";
+    card.dataset.open = "0";
+    card.dataset.rowId = r.id;
+    card.setAttribute("data-row-id", r.id);
+
+    const circle = document.createElement("div");
+    circle.className = "circle" + (r.done ? " done" : "");
+    const check = document.createElement("div");
+    check.className = "check";
+    circle.appendChild(check);
+
+    const content = document.createElement("div");
+    content.className = "content";
+
+    const text = document.createElement("div");
+    text.className = "text" + (r.done ? " done" : "");
+    text.innerText = r.text;
+
+    const sub = document.createElement("div");
+    sub.className = "subrow";
+
+    if(r.dueAt !== null){
+      const badge = document.createElement("div");
+      const isOver = (!r.done && r.dueAt < nowMs());
+      badge.className = "badge due" + (isOver ? " over" : "");
+      badge.innerText = isOver ? `Overdue • ${fmtWhen(r.dueAt)}` : `Due • ${fmtWhen(r.dueAt)}`;
+      sub.appendChild(badge);
+    } else {
+      const badge = document.createElement("div");
+      badge.className = "badge";
+      badge.innerText = "No time";
+      sub.appendChild(badge);
     }
 
-    // Enter key adds
-    document.getElementById("input").addEventListener("keydown", (e)=>{
-      if(e.key === "Enter") addReminder();
+    content.appendChild(text);
+    content.appendChild(sub);
+
+    const right = document.createElement("div");
+    right.className = "right";
+    right.innerText = r.dueAt !== null ? "⏰" : "";
+
+    // Toggle done
+    circle.onclick = ()=>{
+      haptic(10);
+      reminders[index].done = !reminders[index].done;
+      save();
+      render();
+    };
+
+    // Tap card closes swipe if open
+    card.addEventListener("click",(e)=>{
+      if(e.target === circle || circle.contains(e.target)) return;
+      if(card.dataset.open === "1"){
+        closeSwipe(card);
+      }
     });
 
-    render();
-  </script>
+    // Delete by tapping red area
+    bg.onclick = ()=>{
+      haptic(18);
+      removeWithAnimation(index);
+    };
+
+    card.appendChild(circle);
+    card.appendChild(content);
+    card.appendChild(right);
+
+    wrap.appendChild(bg);
+    wrap.appendChild(card);
+    list.appendChild(wrap);
+
+    attachSwipe(card, bg, ()=> removeWithAnimation(index));
+  });
+
+  ensureTicker();
+}
+
+/* Swipe gestures */
+function setX(card, x, animate){
+  card.style.transition = animate ? "transform 140ms ease" : "none";
+  card.style.transform = `translateX(${x}px)`;
+}
+function closeSwipe(card){
+  card.dataset.open = "0";
+  setX(card, 0, true);
+}
+function openSwipe(card, OPEN_X){
+  card.dataset.open = "1";
+  setX(card, OPEN_X, true);
+}
+
+function attachSwipe(card, bg, onDelete){
+  let startX = 0;
+  let baseX = 0;
+  let dragging = false;
+  const OPEN_X = -96;
+
+  card.addEventListener("touchstart",(e)=>{
+    if(e.touches.length !== 1) return;
+    dragging = true;
+    startX = e.touches[0].clientX;
+    baseX = (card.dataset.open === "1") ? OPEN_X : 0;
+    card.style.transition = "none";
+  }, { passive:true });
+
+  card.addEventListener("touchmove",(e)=>{
+    if(!dragging) return;
+    const x = e.touches[0].clientX;
+    const dx = x - startX;
+    let next = baseX + dx;
+
+    // clamp
+    if(next > 0) next = 0;
+    if(next < OPEN_X) next = OPEN_X;
+
+    setX(card, next, false);
+  }, { passive:true });
+
+  card.addEventListener("touchend",()=>{
+    if(!dragging) return;
+    dragging = false;
+
+    const m = new WebKitCSSMatrix(getComputedStyle(card).transform);
+    const x = m.m41;
+    if(x < OPEN_X/2) openSwipe(card, OPEN_X);
+    else closeSwipe(card);
+  });
+
+  // Optional: if swipe is already open, tapping delete background deletes
+  bg.addEventListener("click", onDelete);
+}
+
+/* =========================
+   Add / Edit behavior
+========================= */
+function addReminder(){
+  const textEl = document.getElementById("textInput");
+  const dtEl = document.getElementById("dtInput");
+
+  const text = textEl.value.trim();
+  if(!text) return;
+
+  const dueAt = parseLocalDT(dtEl.value);
+
+  reminders.push({
+    id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random(),
+    text,
+    done:false,
+    dueAt,
+    createdAt: nowMs()
+  });
+
+  save();
+  haptic(8);
+
+  // animation feel: show toast
+  toast("Added ✅");
+  textEl.value = "";
+  dtEl.value = "";
+  textEl.focus();
+
+  render();
+}
+
+/* Enter key adds */
+document.getElementById("textInput").addEventListener("keydown",(e)=>{
+  if(e.key === "Enter") addReminder();
+});
+
+/* =========================
+   Reminder ticker (best-effort)
+========================= */
+function ensureTicker(){
+  clearInterval(window.__laneTicker);
+  window.__laneTicker = setInterval(()=>{
+    const now = nowMs();
+
+    // Fire only for open items with dueAt <= now, and mark as "notified" in-memory
+    // We'll store a runtime set; it resets if page reloads (good enough for your setup)
+    window.__notified = window.__notified || new Set();
+
+    reminders.forEach((r)=>{
+      if(r.done) return;
+      if(r.dueAt === null) return;
+      if(r.dueAt > now) return;
+
+      if(window.__notified.has(r.id)) return;
+
+      // best-effort notify
+      window.__notified.add(r.id);
+
+      const title = "Lane Reminder";
+      const body = r.text + " • " + fmtWhen(r.dueAt);
+
+      if(supportsNotifications() && Notification.permission === "granted"){
+        try{ new Notification(title, { body }); }
+        catch(e){ fireReminder(title, body); }
+      } else {
+        fireReminder(title, body);
+        toast("Tip: true push notifications need Safari Home Screen install.");
+      }
+    });
+  }, 1000);
+}
+
+/* =========================
+   Init
+========================= */
+render();
+ensureTicker();
+
+// Optional: register service worker if available (helps install/polish; push still limited by iOS rules)
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+</script>
 </body>
 </html>
