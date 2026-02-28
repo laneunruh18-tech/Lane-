@@ -1,27 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="utf-8" />
+  <title>Lane</title>
 
-<meta charset="utf-8">
+  <!-- Viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-<title>Lane</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#000000" />
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <!-- iOS standalone mode -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Lane" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-<!-- PWA -->
-<link rel="manifest" href="/manifest.json">
-
-<!-- iOS App Mode -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Lane">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<!-- App Icon -->
-<link rel="apple-touch-icon" href="/icon-192.png">
-
-<meta name="theme-color" content="#000000">
-
+  <!-- iOS icon -->
+  <link rel="apple-touch-icon" href="/icon-192.png" />
 
   <style>
     :root{
@@ -36,77 +32,61 @@ content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     }
 
     *{ box-sizing:border-box; }
-     </head>
+
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background:var(--bg);
       color:var(--text);
-      padding:18px 16px 34px;
       -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      -webkit-text-size-adjust:100%;
     }
 
-    .wrap{
-      max-width:640px;
+    .app{
+      max-width:720px;
       margin:0 auto;
-      opacity:0;
-      transform:translateY(6px);
-      animation:in .28s ease-out forwards;
+      padding:18px 16px 110px;
     }
-    @keyframes in{ to { opacity:1; transform:translateY(0); } }
 
     header{
-      margin:6px 0 12px;
-      padding:0 2px;
-    }
-    #bigTitle{
-      margin:0;
-      font-size:44px;
-      letter-spacing:-0.9px;
-      font-weight:900;
-    }
-    #bigSub{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:700;
-    }
-
-    /* Tabs */
-    .tabs{
       display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin:12px 0 14px;
-    }
-    .tab{
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.75);
-      color:rgba(17,17,17,.75);
-      font-weight:900;
-      font-size:13px;
-      cursor:pointer;
-      user-select:none;
-      transition:transform .12s ease, background .2s ease, color .2s ease;
-    }
-    .tab:active{ transform:scale(.98); }
-    .tab.active{
-      background:#111;
-      color:#fff;
-      border-color:#111;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:6px 0 14px;
     }
 
-    /* Add panel */
-    .panel{
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    h1{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-0.02em;
+    }
+
+    .sub{
+      margin:0;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .card{
       background:var(--card);
       border:1px solid var(--line);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .composer{
       padding:14px;
-      margin:0 0 14px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
     }
 
     .row{
@@ -116,678 +96,417 @@ content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
       flex-wrap:wrap;
     }
 
-    input[type="text"]{
-      flex:1;
-      min-width:220px;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      font-size:16px;
-      outline:none;
-      background:#fff;
+    input, select, button, textarea{
+      font:inherit;
     }
 
-    input[type="datetime-local"]{
-      padding:14px 12px;
+    input[type="text"], input[type="datetime-local"]{
+      width:100%;
+      padding:12px 12px;
       border-radius:14px;
       border:1px solid var(--line);
-      font-size:14px;
-      outline:none;
       background:#fff;
+      outline:none;
+    }
+
+    input[type="text"]:focus, input[type="datetime-local"]:focus{
+      border-color:rgba(0,0,0,.25);
     }
 
     .btn{
-      padding:14px 16px;
+      border:none;
       border-radius:14px;
-      border:0;
+      padding:12px 14px;
       background:#111;
       color:#fff;
-      font-weight:900;
+      font-weight:600;
       cursor:pointer;
-      user-select:none;
-      transition:transform .12s ease, opacity .2s ease;
+      transition:transform .05s ease;
     }
-    .btn:active{ transform:scale(.98); }
+
+    .btn:active{
+      transform:scale(.99);
+    }
+
     .btn.secondary{
-      background:rgba(17,17,17,.08);
+      background:#fff;
       color:#111;
       border:1px solid var(--line);
+      font-weight:600;
     }
 
-    .quick{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .chip{
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(17,17,17,.04);
-      color:#111;
-      font-weight:900;
-      font-size:12px;
-      cursor:pointer;
-      user-select:none;
-      transition:transform .12s ease, background .2s ease;
-    }
-    .chip:active{ transform:scale(.98); }
-
-    .metaLine{
-      margin-top:10px;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:800;
-      align-items:center;
-    }
-
-    /* List / Swipe */
-    #list{ margin-top:10px; }
-
-    .swipeWrap{
-      position:relative;
-      border-radius:var(--radius);
-      overflow:hidden;
-      margin:10px 0;
-    }
-    .deleteBg{
-      position:absolute;
-      inset:0;
-      background:var(--danger);
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      padding-right:16px;
-      color:#fff;
-      font-weight:900;
-      user-select:none;
+    .list{
+      margin-top:14px;
     }
 
     .item{
-      position:relative;
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:0 6px 18px rgba(0,0,0,.06);
-      padding:14px 14px;
       display:flex;
-      align-items:center;
+      justify-content:space-between;
       gap:12px;
-      transform:translateX(0px);
-      transition:transform 140ms ease, opacity 160ms ease;
-      will-change:transform, opacity;
-    }
-    .item.removing{
-      opacity:0;
-      transform:translateX(-12px);
+      padding:14px;
+      border-top:1px solid var(--line);
+      align-items:flex-start;
     }
 
-    .circle{
-      width:24px;
-      height:24px;
-      border-radius:50%;
-      border:2px solid rgba(17,17,17,.35);
-      flex:0 0 auto;
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      user-select:none;
-      transition:transform .12s ease, background .2s ease, border-color .2s ease;
+    .item:first-child{
+      border-top:none;
     }
-    .circle:active{ transform:scale(.96); }
-    .circle.done{
-      background:#111;
-      border-color:#111;
-    }
-    .check{
-      width:10px; height:10px;
-      border-right:2px solid #fff;
-      border-bottom:2px solid #fff;
-      transform:rotate(45deg);
-      margin-top:-1px;
-      opacity:0;
-    }
-    .circle.done .check{ opacity:1; }
 
-    .content{
+    .left{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
       min-width:0;
       flex:1;
     }
-    .text{
-      font-size:18px;
-      line-height:1.15;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      font-weight:900;
-      letter-spacing:-0.2px;
+
+    .check{
+      width:22px;
+      height:22px;
+      border-radius:7px;
+      border:1.5px solid rgba(0,0,0,.25);
+      flex:0 0 auto;
+      margin-top:2px;
+      display:grid;
+      place-items:center;
+      background:#fff;
+      cursor:pointer;
     }
-    .text.done{
-      text-decoration:line-through;
-      opacity:.42;
-      font-weight:800;
+
+    .check.on{
+      background:#111;
+      border-color:#111;
+      color:#fff;
     }
-    .subrow{
-      margin-top:4px;
+
+    .textWrap{
+      min-width:0;
+      flex:1;
+    }
+
+    .task{
+      margin:0;
+      font-size:16px;
+      line-height:1.2;
+      word-break:break-word;
+    }
+
+    .meta{
+      margin:6px 0 0;
       font-size:12px;
       color:var(--muted);
       display:flex;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
-      align-items:center;
-      font-weight:800;
-    }
-    .badge{
-      padding:5px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(17,17,17,.04);
-      font-weight:900;
-      font-size:11px;
-    }
-    .badge.due{
-      background:rgba(255,149,0,.10);
-      border-color:rgba(255,149,0,.25);
-    }
-    .badge.over{
-      background:rgba(255,59,48,.10);
-      border-color:rgba(255,59,48,.25);
     }
 
     .right{
+      display:flex;
+      gap:8px;
       flex:0 0 auto;
-      color:rgba(17,17,17,.45);
-      font-weight:900;
-      user-select:none;
     }
 
-    .empty{
-      text-align:center;
-      color:var(--muted);
-      margin:26px 0 0;
-      font-weight:900;
-    }
-
-    .toast{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:18px;
-      background:rgba(17,17,17,.92);
-      color:#fff;
-      padding:10px 12px;
+    .iconBtn{
+      border:1px solid var(--line);
+      background:#fff;
       border-radius:12px;
-      font-size:13px;
-      max-width:90vw;
-      display:none;
-      z-index:9999;
+      padding:9px 10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .iconBtn.danger{
+      color:var(--danger);
+      border-color:rgba(255,59,48,.25);
+    }
+
+    /* Floating action bar */
+    .dock{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(242,242,247,.8);
+      backdrop-filter:saturate(180%) blur(18px);
+      border-top:1px solid var(--line);
+    }
+
+    .dockInner{
+      max-width:720px;
+      margin:0 auto;
+      display:flex;
+      gap:10px;
+    }
+
+    .dockInner .btn{
+      flex:1;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(0,0,0,.06);
+      border:1px solid rgba(0,0,0,.06);
+      font-size:12px;
+      color:rgba(0,0,0,.75);
+    }
+
+    /* Small screens */
+    @media (max-width:420px){
+      h1{ font-size:26px; }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
+  <div class="app">
     <header>
-      <h1 id="bigTitle">Today</h1>
-      <div id="bigSub"></div>
+      <div class="title">
+        <h1>Lane</h1>
+        <p class="sub">Fast, clean reminders.</p>
+      </div>
+      <div class="pill" id="countPill">0 reminders</div>
     </header>
 
-    <div class="tabs" id="tabs"></div>
-
-    <div class="panel">
-      <div class="row">
-        <input id="textInput" type="text" placeholder="New Reminder" autocomplete="off" />
-        <input id="dtInput" type="datetime-local" />
-        <button class="btn" onclick="addReminder()">Add</button>
+    <div class="card">
+      <div class="composer">
+        <div class="row">
+          <input id="taskInput" type="text" placeholder="Add a reminder…" autocomplete="off" />
+        </div>
+        <div class="row">
+          <input id="timeInput" type="datetime-local" />
+          <button class="btn" id="addBtn">Add</button>
+          <button class="btn secondary" id="clearBtn" title="Clear completed">Clear Done</button>
+        </div>
       </div>
 
-      <div class="quick" id="quick"></div>
-
-      <div class="metaLine">
-        <div id="countLine"></div>
-        <button class="btn secondary" onclick="requestNotifs()">Notifications</button>
-      </div>
+      <div class="list" id="list"></div>
     </div>
-
-    <div id="list"></div>
-    <div id="empty" class="empty" style="display:none;">No reminders here 🧼</div>
   </div>
 
-  <div id="toast" class="toast"></div>
+  <div class="dock">
+    <div class="dockInner">
+      <button class="btn secondary" id="notifyBtn">Enable Notifications</button>
+      <button class="btn" id="quickAddBtn">Quick Add</button>
+    </div>
+  </div>
 
-<script>
-/* ========= Data ========= */
-let reminders = JSON.parse(localStorage.getItem("laneReminders")) || [];
-// { id, text, done, dueAt: number|null, createdAt: number }
+  <script>
+    // --- Storage helpers ---
+    const STORAGE_KEY = "lane_reminders_v1";
 
-function save(){
-  localStorage.setItem("laneReminders", JSON.stringify(reminders));
-}
-
-/* ========= Helpers ========= */
-function haptic(ms=10){
-  try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
-}
-function toast(msg){
-  const t = document.getElementById("toast");
-  t.innerText = msg;
-  t.style.display = "block";
-  clearTimeout(window.__toastTimer);
-  window.__toastTimer = setTimeout(()=> t.style.display="none", 2200);
-}
-function nowMs(){ return Date.now(); }
-
-function startOfToday(){
-  const d = new Date(); d.setHours(0,0,0,0);
-  return d.getTime();
-}
-function endOfToday(){
-  const d = new Date(); d.setHours(23,59,59,999);
-  return d.getTime();
-}
-function startOfTomorrow(){
-  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+1);
-  return d.getTime();
-}
-
-function fmtWhen(ms){
-  const d = new Date(ms);
-  const now = new Date();
-  const sameDay =
-    d.getFullYear()===now.getFullYear() &&
-    d.getMonth()===now.getMonth() &&
-    d.getDate()===now.getDate();
-
-  const hh = d.getHours();
-  const mm = String(d.getMinutes()).padStart(2,"0");
-  const ampm = hh>=12 ? "PM":"AM";
-  const h12 = (hh%12)||12;
-  const time = `${h12}:${mm} ${ampm}`;
-
-  if(sameDay) return `Today • ${time}`;
-
-  const tmr = new Date();
-  tmr.setDate(tmr.getDate()+1);
-  const isTomorrow =
-    d.getFullYear()===tmr.getFullYear() &&
-    d.getMonth()===tmr.getMonth() &&
-    d.getDate()===tmr.getDate();
-
-  if(isTomorrow) return `Tomorrow • ${time}`;
-
-  const mon = d.toLocaleString(undefined, { month:"short" });
-  return `${mon} ${d.getDate()} • ${time}`;
-}
-
-function parseLocalDT(value){
-  if(!value) return null;
-  const ms = new Date(value).getTime();
-  return isNaN(ms) ? null : ms;
-}
-function setDTInput(ms){
-  const el = document.getElementById("dtInput");
-  if(ms === null){ el.value = ""; return; }
-  const d = new Date(ms);
-  const pad = (n)=> String(n).padStart(2,"0");
-  el.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-/* ========= Notifications (best-effort) ========= */
-function supportsNotifications(){ return typeof window.Notification !== "undefined"; }
-
-async function requestNotifs(){
-  if(!supportsNotifications()){
-    toast("Notifications not supported here.");
-    return;
-  }
-  if(Notification.permission === "granted"){
-    toast("Notifications already allowed ✅");
-    return;
-  }
-  if(Notification.permission === "denied"){
-    toast("Notifications blocked in settings.");
-    return;
-  }
-  try{
-    const perm = await Notification.requestPermission();
-    toast(perm === "granted" ? "Notifications allowed ✅" : "Okay—no notifications.");
-  }catch(e){
-    toast("Couldn’t request permission.");
-  }
-}
-
-function fireReminder(title, body){
-  if(supportsNotifications() && Notification.permission === "granted"){
-    try{ new Notification(title, { body }); return; }catch(e){}
-  }
-  alert(`${title}\n\n${body}`);
-}
-
-/* ========= Views ========= */
-const VIEWS = [
-  { key:"today", label:"Today" },
-  { key:"upcoming", label:"Upcoming" },
-  { key:"all", label:"All" },
-  { key:"done", label:"Completed" },
-];
-let currentView = localStorage.getItem("laneView") || "today";
-
-function setView(key){
-  currentView = key;
-  localStorage.setItem("laneView", key);
-  render();
-}
-
-function viewItems(){
-  const todayStart = startOfToday();
-  const todayEnd = endOfToday();
-  const tomorrowStart = startOfTomorrow();
-
-  const items = reminders.slice();
-
-  items.sort((a,b)=>{
-    if(a.done !== b.done) return a.done ? 1 : -1;
-    const ad = a.dueAt ?? Infinity;
-    const bd = b.dueAt ?? Infinity;
-    if(ad !== bd) return ad - bd;
-    return (a.createdAt||0) - (b.createdAt||0);
-  });
-
-  if(currentView === "today"){
-    return items.filter(r => !r.done && r.dueAt !== null && r.dueAt >= todayStart && r.dueAt <= todayEnd);
-  }
-  if(currentView === "upcoming"){
-    return items.filter(r => !r.done && r.dueAt !== null && r.dueAt >= tomorrowStart);
-  }
-  if(currentView === "done"){
-    return items.filter(r => r.done);
-  }
-  // all open
-  return items.filter(r => !r.done);
-}
-
-/* ========= Big header ========= */
-function setBigHeader(){
-  const titleEl = document.getElementById("bigTitle");
-  const subEl = document.getElementById("bigSub");
-
-  const map = { today:"Today", upcoming:"Upcoming", all:"All", done:"Completed" };
-  titleEl.innerText = map[currentView] || "Today";
-
-  const d = new Date();
-  const dateText = d.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
-
-  const openCount = reminders.filter(r => !r.done).length;
-  const dueTodayCount = reminders.filter(r =>
-    !r.done && r.dueAt !== null && r.dueAt >= startOfToday() && r.dueAt <= endOfToday()
-  ).length;
-
-  if(currentView === "done"){
-    const doneCount = reminders.filter(r => r.done).length;
-    subEl.innerText = `${dateText} • ${doneCount} completed`;
-  } else {
-    subEl.innerText = `${dateText} • ${openCount} open • ${dueTodayCount} due today`;
-  }
-}
-
-/* ========= Quick chips ========= */
-function buildQuickChips(){
-  const quick = document.getElementById("quick");
-  quick.innerHTML = "";
-
-  const chips = [
-    { label:"+10 min", fn:()=> setDTInput(nowMs() + 10*60*1000) },
-    { label:"+1 hr", fn:()=> setDTInput(nowMs() + 60*60*1000) },
-    { label:"Tonight 7pm", fn:()=> { const d=new Date(); d.setHours(19,0,0,0); setDTInput(d.getTime()); } },
-    { label:"Tomorrow 9am", fn:()=> { const d=new Date(); d.setDate(d.getDate()+1); d.setHours(9,0,0,0); setDTInput(d.getTime()); } },
-    { label:"No time", fn:()=> setDTInput(null) },
-  ];
-
-  chips.forEach(c=>{
-    const el = document.createElement("div");
-    el.className = "chip";
-    el.innerText = c.label;
-    el.onclick = ()=>{ haptic(8); c.fn(); toast(c.label); };
-    quick.appendChild(el);
-  });
-}
-
-/* ========= Render ========= */
-function renderTabs(){
-  const tabs = document.getElementById("tabs");
-  tabs.innerHTML = "";
-  VIEWS.forEach(v=>{
-    const t = document.createElement("div");
-    t.className = "tab" + (v.key===currentView ? " active" : "");
-    t.innerText = v.label;
-    t.onclick = ()=>{ haptic(6); setView(v.key); };
-    tabs.appendChild(t);
-  });
-}
-
-function updateCountLine(){
-  const totalOpen = reminders.filter(r=>!r.done).length;
-  const dueToday = reminders.filter(r=>!r.done && r.dueAt !== null && r.dueAt >= startOfToday() && r.dueAt <= endOfToday()).length;
-  document.getElementById("countLine").innerText = `${totalOpen} open • ${dueToday} due today`;
-}
-
-function removeWithAnimation(index){
-  const id = reminders[index].id;
-  const el = document.querySelector(`[data-row-id="${id}"]`);
-  if(el){
-    el.classList.add("removing");
-    setTimeout(()=>{
-      reminders.splice(index,1);
-      save();
-      render();
-    }, 170);
-  }else{
-    reminders.splice(index,1);
-    save();
-    render();
-  }
-}
-
-function setX(card, x, animate){
-  card.style.transition = animate ? "transform 140ms ease" : "none";
-  card.style.transform = `translateX(${x}px)`;
-}
-function closeSwipe(card){
-  card.dataset.open = "0";
-  setX(card, 0, true);
-}
-function openSwipe(card, OPEN_X){
-  card.dataset.open = "1";
-  setX(card, OPEN_X, true);
-}
-function attachSwipe(card){
-  let startX = 0;
-  let baseX = 0;
-  let dragging = false;
-  const OPEN_X = -96;
-
-  card.addEventListener("touchstart",(e)=>{
-    if(e.touches.length !== 1) return;
-    dragging = true;
-    startX = e.touches[0].clientX;
-    baseX = (card.dataset.open === "1") ? OPEN_X : 0;
-    card.style.transition = "none";
-  }, { passive:true });
-
-  card.addEventListener("touchmove",(e)=>{
-    if(!dragging) return;
-    const x = e.touches[0].clientX;
-    const dx = x - startX;
-    let next = baseX + dx;
-    if(next > 0) next = 0;
-    if(next < OPEN_X) next = OPEN_X;
-    setX(card, next, false);
-  }, { passive:true });
-
-  card.addEventListener("touchend",()=>{
-    if(!dragging) return;
-    dragging = false;
-    const m = new WebKitCSSMatrix(getComputedStyle(card).transform);
-    const x = m.m41;
-    if(x < OPEN_X/2) openSwipe(card, OPEN_X);
-    else closeSwipe(card);
-  });
-
-  card.addEventListener("click",()=>{
-    if(card.dataset.open === "1") closeSwipe(card);
-  });
-}
-
-function render(){
-  renderTabs();
-  buildQuickChips();
-  setBigHeader();
-  updateCountLine();
-
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-
-  const items = viewItems();
-  document.getElementById("empty").style.display = items.length ? "none" : "block";
-
-  items.forEach((r)=>{
-    const index = reminders.findIndex(x=>x.id===r.id);
-
-    const wrap = document.createElement("div");
-    wrap.className = "swipeWrap";
-
-    const bg = document.createElement("div");
-    bg.className = "deleteBg";
-    bg.innerText = "Delete";
-
-    const card = document.createElement("div");
-    card.className = "item";
-    card.dataset.open = "0";
-    card.setAttribute("data-row-id", r.id);
-
-    const circle = document.createElement("div");
-    circle.className = "circle" + (r.done ? " done" : "");
-    const check = document.createElement("div");
-    check.className = "check";
-    circle.appendChild(check);
-
-    const content = document.createElement("div");
-    content.className = "content";
-
-    const text = document.createElement("div");
-    text.className = "text" + (r.done ? " done" : "");
-    text.innerText = r.text;
-
-    const sub = document.createElement("div");
-    sub.className = "subrow";
-
-    if(r.dueAt !== null){
-      const badge = document.createElement("div");
-      const isOver = (!r.done && r.dueAt < nowMs());
-      badge.className = "badge due" + (isOver ? " over" : "");
-      badge.innerText = isOver ? `Overdue • ${fmtWhen(r.dueAt)}` : `Due • ${fmtWhen(r.dueAt)}`;
-      sub.appendChild(badge);
-    } else {
-      const badge = document.createElement("div");
-      badge.className = "badge";
-      badge.innerText = "No time";
-      sub.appendChild(badge);
+    function loadReminders(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      }catch(e){
+        return [];
+      }
     }
 
-    content.appendChild(text);
-    content.appendChild(sub);
+    function saveReminders(reminders){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reminders));
+    }
 
-    const right = document.createElement("div");
-    right.className = "right";
-    right.innerText = r.dueAt !== null ? "⏰" : "";
+    // --- State ---
+    let reminders = loadReminders();
 
-    circle.onclick = ()=>{
-      haptic(10);
-      reminders[index].done = !reminders[index].done;
-      save();
+    // --- Elements ---
+    const listEl = document.getElementById("list");
+    const taskInput = document.getElementById("taskInput");
+    const timeInput = document.getElementById("timeInput");
+    const addBtn = document.getElementById("addBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const quickAddBtn = document.getElementById("quickAddBtn");
+    const notifyBtn = document.getElementById("notifyBtn");
+    const countPill = document.getElementById("countPill");
+
+    // --- Utilities ---
+    function formatWhen(iso){
+      if(!iso) return "No time set";
+      const d = new Date(iso);
+      if(Number.isNaN(d.getTime())) return "Invalid time";
+      return d.toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
+    }
+
+    function updateCount(){
+      const active = reminders.filter(r => !r.done).length;
+      const total = reminders.length;
+      countPill.textContent = `${active} active · ${total} total`;
+    }
+
+    function render(){
+      listEl.innerHTML = "";
+      if(reminders.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "item";
+        empty.innerHTML = `
+          <div class="left">
+            <div class="textWrap">
+              <p class="task" style="color:rgba(0,0,0,.55);">No reminders yet. Add one 👆</p>
+              <p class="meta">Tip: set a time if you want a notification while the app is open.</p>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(empty);
+        updateCount();
+        return;
+      }
+
+      reminders
+        .slice()
+        .sort((a,b) => {
+          // undone first, then by time if present, then newest
+          if(a.done !== b.done) return a.done ? 1 : -1;
+          const ta = a.when ? new Date(a.when).getTime() : Infinity;
+          const tb = b.when ? new Date(b.when).getTime() : Infinity;
+          if(ta !== tb) return ta - tb;
+          return b.created - a.created;
+        })
+        .forEach(rem => {
+          const row = document.createElement("div");
+          row.className = "item";
+
+          row.innerHTML = `
+            <div class="left">
+              <button class="check ${rem.done ? "on" : ""}" aria-label="Toggle done">
+                ${rem.done ? "✓" : ""}
+              </button>
+              <div class="textWrap">
+                <p class="task" style="${rem.done ? "text-decoration:line-through; color:rgba(0,0,0,.45);" : ""}">${escapeHtml(rem.text)}</p>
+                <p class="meta">
+                  <span>${formatWhen(rem.when)}</span>
+                  ${rem.done ? "<span>Done</span>" : ""}
+                </p>
+              </div>
+            </div>
+            <div class="right">
+              <button class="iconBtn" title="Edit">Edit</button>
+              <button class="iconBtn danger" title="Delete">Del</button>
+            </div>
+          `;
+
+          const checkBtn = row.querySelector(".check");
+          const editBtn = row.querySelector(".iconBtn");
+          const delBtn = row.querySelector(".iconBtn.danger");
+
+          checkBtn.addEventListener("click", () => {
+            rem.done = !rem.done;
+            saveReminders(reminders);
+            render();
+          });
+
+          editBtn.addEventListener("click", () => {
+            const newText = prompt("Edit reminder", rem.text);
+            if(newText === null) return;
+            const cleaned = newText.trim();
+            if(!cleaned) return;
+
+            const newWhen = prompt("Edit time (ISO) or leave blank.\nExample: 2026-02-27T18:30", rem.when || "");
+            rem.text = cleaned;
+            rem.when = (newWhen || "").trim() || "";
+            saveReminders(reminders);
+            render();
+          });
+
+          delBtn.addEventListener("click", () => {
+            reminders = reminders.filter(r => r.id !== rem.id);
+            saveReminders(reminders);
+            render();
+          });
+
+          listEl.appendChild(row);
+        });
+
+      updateCount();
+    }
+
+    function addReminder(){
+      const text = taskInput.value.trim();
+      if(!text) return;
+
+      const when = (timeInput.value || "").trim(); // datetime-local gives "YYYY-MM-DDTHH:MM"
+      const newItem = {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+        text,
+        when,
+        done: false,
+        created: Date.now()
+      };
+
+      reminders.unshift(newItem);
+      saveReminders(reminders);
+
+      taskInput.value = "";
+      timeInput.value = "";
+      taskInput.focus();
+
       render();
-    };
+      scheduleInAppNotification(newItem);
+    }
 
-    bg.onclick = ()=>{
-      haptic(18);
-      removeWithAnimation(index);
-    };
+    function clearDone(){
+      reminders = reminders.filter(r => !r.done);
+      saveReminders(reminders);
+      render();
+    }
 
-    card.appendChild(circle);
-    card.appendChild(content);
-    card.appendChild(right);
+    // --- In-app notifications (works while app is open) ---
+    async function enableNotifications(){
+      if(!("Notification" in window)){
+        alert("Notifications aren’t supported in this browser.");
+        return;
+      }
 
-    wrap.appendChild(bg);
-    wrap.appendChild(card);
-    list.appendChild(wrap);
+      const perm = await Notification.requestPermission();
+      if(perm !== "granted"){
+        alert("Notifications not enabled.");
+        return;
+      }
 
-    attachSwipe(card);
-  });
+      alert("Notifications enabled ✅\n\nNote: iOS web apps can be limited; we can upgrade this next with a service worker if needed.");
+    }
 
-  ensureTicker();
-}
+    function scheduleInAppNotification(item){
+      // Basic in-app reminder: only fires if the app is open.
+      if(!item.when) return;
+      if(!("Notification" in window)) return;
+      if(Notification.permission !== "granted") return;
 
-/* ========= Add ========= */
-function addReminder(){
-  const textEl = document.getElementById("textInput");
-  const dtEl = document.getElementById("dtInput");
+      const ms = new Date(item.when).getTime() - Date.now();
+      if(!Number.isFinite(ms) || ms <= 0) return;
 
-  const text = textEl.value.trim();
-  if(!text) return;
+      setTimeout(() => {
+        try{
+          new Notification("Lane Reminder", { body: item.text });
+        }catch(e){}
+      }, ms);
+    }
 
-  const dueAt = parseLocalDT(dtEl.value);
+    function escapeHtml(str){
+      return str
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
 
-  reminders.push({
-    id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random(),
-    text,
-    done:false,
-    dueAt,
-    createdAt: nowMs()
-  });
-
-  save();
-  haptic(8);
-  toast("Added ✅");
-
-  textEl.value = "";
-  dtEl.value = "";
-  textEl.focus();
-  render();
-}
-
-document.getElementById("textInput").addEventListener("keydown",(e)=>{
-  if(e.key === "Enter") addReminder();
-});
-
-/* ========= Reminder ticker (best-effort while app is open) ========= */
-function ensureTicker(){
-  clearInterval(window.__laneTicker);
-  window.__laneTicker = setInterval(()=>{
-    const now = nowMs();
-    window.__notified = window.__notified || new Set();
-
-    reminders.forEach((r)=>{
-      if(r.done) return;
-      if(r.dueAt === null) return;
-      if(r.dueAt > now) return;
-      if(window.__notified.has(r.id)) return;
-
-      window.__notified.add(r.id);
-      const title = "Lane Reminder";
-      const body = `${r.text} • ${fmtWhen(r.dueAt)}`;
-      fireReminder(title, body);
-      toast("Reminder 🔔");
+    // --- Events ---
+    addBtn.addEventListener("click", addReminder);
+    taskInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") addReminder();
     });
-  }, 1000);
-}
+    clearBtn.addEventListener("click", clearDone);
+    quickAddBtn.addEventListener("click", () => {
+      taskInput.focus();
+      taskInput.scrollIntoView({ behavior:"smooth", block:"center" });
+    });
+    notifyBtn.addEventListener("click", enableNotifications);
 
-/* ========= Init ========= */
-render();
-ensureTicker();
-</script>
+    // First render
+    render();
+  </script>
 </body>
 </html>
