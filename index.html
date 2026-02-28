@@ -20,11 +20,13 @@
   <link rel="apple-touch-icon" href="/icon-192.png" />
 
   <style>
-    /* ============ THEMES (no wallpapers) ============ */
+    /* ===================== THEMES (no wallpapers) ===================== */
     :root{
       --danger:#ff3b30;
+      --ok:#34c759;
       --shadow:0 10px 30px rgba(0,0,0,.08);
       --radius:18px;
+      --sheetShadow:0 30px 80px rgba(0,0,0,.25);
     }
 
     :root[data-theme="light"]{
@@ -40,6 +42,8 @@
       --chipBg:#fff;
       --chipText:#111;
       --chipBorder:var(--line);
+      --overlay:rgba(0,0,0,.35);
+      --dockGlass:rgba(242,242,247,.82);
     }
 
     :root[data-theme="dark"]{
@@ -55,6 +59,8 @@
       --chipBg:#14141b;
       --chipText:#f5f5f7;
       --chipBorder:rgba(245,245,247,.14);
+      --overlay:rgba(0,0,0,.55);
+      --dockGlass:rgba(10,10,14,.72);
     }
 
     :root[data-theme="charcoal"]{
@@ -70,6 +76,8 @@
       --chipBg:#1c1c1f;
       --chipText:#f2f2f4;
       --chipBorder:rgba(242,242,244,.14);
+      --overlay:rgba(0,0,0,.55);
+      --dockGlass:rgba(10,10,14,.72);
     }
 
     :root[data-theme="ocean"]{
@@ -85,6 +93,8 @@
       --chipBg:#0f2237;
       --chipText:#eaf3ff;
       --chipBorder:rgba(234,243,255,.16);
+      --overlay:rgba(0,0,0,.55);
+      --dockGlass:rgba(10,10,14,.72);
     }
 
     *{ box-sizing:border-box; }
@@ -96,6 +106,7 @@
       color:var(--text);
       -webkit-font-smoothing:antialiased;
       -webkit-text-size-adjust:100%;
+      overscroll-behavior-y: none;
     }
 
     .app{
@@ -176,7 +187,7 @@
       padding:12px 14px;
       background:var(--btn);
       color:var(--btnText);
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       transition:transform .05s ease;
       user-select:none;
@@ -188,7 +199,7 @@
       background:transparent;
       color:var(--text);
       border:1px solid var(--line);
-      font-weight:700;
+      font-weight:800;
     }
 
     .pill{
@@ -211,7 +222,7 @@
       color:var(--chipText);
       border-radius:999px;
       padding:8px 10px;
-      font-weight:800;
+      font-weight:900;
       font-size:12px;
       cursor:pointer;
       user-select:none;
@@ -232,16 +243,59 @@
 
     .list{ margin-top:14px; }
 
-    .item{
+    /* ===================== SWIPE ROW ===================== */
+    .swipeWrap{
+      position:relative;
+      border-top:1px solid var(--line);
+      overflow:hidden;
+      background:var(--card);
+    }
+    .swipeWrap:first-child{ border-top:none; }
+
+    .swipeBg{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 14px;
+      font-weight:900;
+      letter-spacing:.01em;
+      user-select:none;
+      pointer-events:none;
+    }
+    .swipeBg .leftAction{
+      color:#fff;
+      opacity:.95;
+    }
+    .swipeBg .rightAction{
+      color:#fff;
+      opacity:.95;
+    }
+
+    .bgDone{ background:var(--ok); }
+    .bgDel{ background:var(--danger); }
+
+    .rowFront{
+      position:relative;
+      background:var(--card);
       display:flex;
       justify-content:space-between;
       gap:12px;
       padding:14px;
-      border-top:1px solid var(--line);
       align-items:flex-start;
-    }
-    .item:first-child{ border-top:none; }
 
+      transform:translateX(0px);
+      transition:transform .18s ease;
+      will-change: transform;
+      touch-action: pan-y;
+    }
+
+    .rowFront.dragging{
+      transition:none;
+    }
+
+    /* Content */
     .left{
       display:flex;
       gap:12px;
@@ -288,26 +342,20 @@
       flex-wrap:wrap;
     }
 
-    .right{
-      display:flex;
-      gap:8px;
-      flex:0 0 auto;
+    /* Subtle animations */
+    @keyframes popIn{
+      from{ opacity:0; transform:translateY(10px); }
+      to{ opacity:1; transform:translateY(0); }
     }
 
-    .iconBtn{
-      border:1px solid var(--line);
-      background:transparent;
-      color:var(--text);
-      border-radius:12px;
-      padding:9px 10px;
-      cursor:pointer;
-      font-weight:800;
-      user-select:none;
+    .animateIn{
+      animation: popIn .18s ease both;
     }
 
-    .iconBtn.danger{
-      color:var(--danger);
-      border-color:rgba(255,59,48,.25);
+    .fadeOut{
+      opacity:0;
+      transform:translateY(-6px);
+      transition: opacity .18s ease, transform .18s ease;
     }
 
     /* Floating action bar */
@@ -315,16 +363,9 @@
       position:fixed;
       left:0; right:0; bottom:0;
       padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-      background:rgba(242,242,247,.82);
+      background:var(--dockGlass);
       border-top:1px solid var(--line);
       backdrop-filter:saturate(180%) blur(18px);
-    }
-
-    /* Dark themes: dock needs a darker glass */
-    :root[data-theme="dark"] .dock,
-    :root[data-theme="charcoal"] .dock,
-    :root[data-theme="ocean"] .dock{
-      background:rgba(10,10,14,.72);
     }
 
     .dockInner{
@@ -335,6 +376,74 @@
     }
 
     .dockInner .btn{ flex:1; }
+
+    /* ===================== EDIT SHEET ===================== */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:var(--overlay);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease;
+    }
+    .overlay.open{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .sheet{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      transform:translateY(110%);
+      transition:transform .22s ease;
+      padding:10px 12px calc(12px + env(safe-area-inset-bottom));
+    }
+    .sheet.open{
+      transform:translateY(0);
+    }
+
+    .sheetCard{
+      max-width:720px;
+      margin:0 auto;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--sheetShadow);
+      overflow:hidden;
+    }
+
+    .sheetTop{
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--line);
+      gap:10px;
+    }
+
+    .sheetTitle{
+      font-weight:900;
+      letter-spacing:-0.01em;
+    }
+
+    .sheetBody{
+      padding:14px;
+      display:grid;
+      gap:10px;
+    }
+
+    .sheetActions{
+      padding:12px 14px;
+      border-top:1px solid var(--line);
+      display:flex;
+      gap:10px;
+    }
+    .sheetActions .btn{ flex:1; }
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+    }
 
     @media (max-width:420px){
       h1{ font-size:26px; }
@@ -377,6 +486,8 @@
           <button class="chip" type="button" data-quick="tom9">Tomorrow 9am</button>
           <span class="whenLabel" id="whenLabel">No time set</span>
         </div>
+
+        <div class="hint">Tip: swipe right to complete ✅, swipe left to delete 🗑️. Tap a reminder to edit.</div>
       </div>
 
       <div class="list" id="list"></div>
@@ -390,21 +501,46 @@
     </div>
   </div>
 
+  <!-- Edit sheet -->
+  <div class="overlay" id="overlay"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheetCard">
+      <div class="sheetTop">
+        <div class="sheetTitle">Edit Reminder</div>
+        <button class="btn secondary" id="closeSheetBtn" type="button">Close</button>
+      </div>
+
+      <div class="sheetBody">
+        <input id="editText" type="text" placeholder="Reminder text" autocomplete="off" />
+        <input id="editTime" type="datetime-local" />
+
+        <div class="row" style="gap:8px;">
+          <button class="chip" type="button" data-equick="none">No time</button>
+          <button class="chip" type="button" data-equick="1h">In 1 hour</button>
+          <button class="chip" type="button" data-equick="6pm">Tonight 6pm</button>
+          <button class="chip" type="button" data-equick="tom9">Tomorrow 9am</button>
+          <span class="whenLabel" id="editWhenLabel">No time set</span>
+        </div>
+      </div>
+
+      <div class="sheetActions">
+        <button class="btn secondary" id="deleteBtn" type="button">Delete</button>
+        <button class="btn" id="saveBtn" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ======================
     // Storage
     // ======================
-    const STORAGE_KEY = "lane_reminders_v2";
+    const STORAGE_KEY = "lane_reminders_v3";
     const THEME_KEY = "lane_theme_v1";
 
     function loadReminders(){
-      try{
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      }catch(e){
-        return [];
-      }
+      try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+      catch(e){ return []; }
     }
-
     function saveReminders(items){
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
@@ -413,6 +549,10 @@
     // State
     // ======================
     let reminders = loadReminders();
+    let lastCreatedId = null;
+
+    // Edit sheet state
+    let editingId = null;
 
     // ======================
     // Elements
@@ -433,6 +573,17 @@
     // Themes
     const themeBtn = document.getElementById("themeBtn");
     const themes = ["light","dark","charcoal","ocean"];
+
+    // Edit sheet
+    const overlay = document.getElementById("overlay");
+    const sheet = document.getElementById("sheet");
+    const closeSheetBtn = document.getElementById("closeSheetBtn");
+    const editText = document.getElementById("editText");
+    const editTime = document.getElementById("editTime");
+    const editWhenLabel = document.getElementById("editWhenLabel");
+    const saveBtn = document.getElementById("saveBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const equickChips = Array.from(document.querySelectorAll(".chip[data-equick]"));
 
     // ======================
     // Helpers
@@ -459,101 +610,6 @@
       return d.toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
     }
 
-    // ======================
-    // Render
-    // ======================
-    function render(){
-      listEl.innerHTML = "";
-
-      if(reminders.length === 0){
-        const empty = document.createElement("div");
-        empty.className = "item";
-        empty.innerHTML = `
-          <div class="left">
-            <div class="textWrap">
-              <p class="task" style="color:var(--muted);">No reminders yet. Add one 👆</p>
-              <p class="meta">Tip: tap “Tonight 6pm” or “Tomorrow 9am” to set time fast.</p>
-            </div>
-          </div>
-        `;
-        listEl.appendChild(empty);
-        updateCount();
-        return;
-      }
-
-      reminders
-        .slice()
-        .sort((a,b) => {
-          if(a.done !== b.done) return a.done ? 1 : -1;
-          const ta = a.when ? new Date(a.when).getTime() : Infinity;
-          const tb = b.when ? new Date(b.when).getTime() : Infinity;
-          if(ta !== tb) return ta - tb;
-          return b.created - a.created;
-        })
-        .forEach(rem => {
-          const row = document.createElement("div");
-          row.className = "item";
-
-          row.innerHTML = `
-            <div class="left">
-              <button class="check ${rem.done ? "on" : ""}" aria-label="Toggle done" type="button">
-                ${rem.done ? "✓" : ""}
-              </button>
-              <div class="textWrap">
-                <p class="task" style="${rem.done ? "text-decoration:line-through; color:var(--muted);" : ""}">
-                  ${escapeHtml(rem.text)}
-                </p>
-                <p class="meta">
-                  <span>${formatWhen(rem.when)}</span>
-                  ${rem.done ? "<span>Done</span>" : ""}
-                </p>
-              </div>
-            </div>
-            <div class="right">
-              <button class="iconBtn" title="Edit" type="button">Edit</button>
-              <button class="iconBtn danger" title="Delete" type="button">Del</button>
-            </div>
-          `;
-
-          const checkBtn = row.querySelector(".check");
-          const editBtn = row.querySelector(".iconBtn");
-          const delBtn  = row.querySelector(".iconBtn.danger");
-
-          checkBtn.addEventListener("click", () => {
-            rem.done = !rem.done;
-            saveReminders(reminders);
-            render();
-          });
-
-          // Keep prompts for now (we can upgrade to an edit sheet later)
-          editBtn.addEventListener("click", () => {
-            const newText = prompt("Edit reminder", rem.text);
-            if(newText === null) return;
-            const cleaned = newText.trim();
-            if(!cleaned) return;
-
-            const newWhen = prompt("Edit time (YYYY-MM-DDTHH:MM) or leave blank.\nExample: 2026-02-27T18:30", rem.when || "");
-            rem.text = cleaned;
-            rem.when = (newWhen || "").trim() || "";
-            saveReminders(reminders);
-            render();
-          });
-
-          delBtn.addEventListener("click", () => {
-            reminders = reminders.filter(r => r.id !== rem.id);
-            saveReminders(reminders);
-            render();
-          });
-
-          listEl.appendChild(row);
-        });
-
-      updateCount();
-    }
-
-    // ======================
-    // Better time input + quick options
-    // ======================
     function pad2(n){ return String(n).padStart(2,"0"); }
 
     function toDatetimeLocalValue(d){
@@ -572,21 +628,18 @@
              d.getDate() === now.getDate();
     }
 
+    // ======================
+    // Better time input (main composer)
+    // ======================
     function clearChipSelection(){
       quickChips.forEach(c => c.classList.remove("on"));
     }
 
     function setWhenLabelFromInput(){
       const v = (timeInput.value || "").trim();
-      if(!v){
-        whenLabel.textContent = "No time set";
-        return;
-      }
+      if(!v){ whenLabel.textContent = "No time set"; return; }
       const d = new Date(v);
-      if(Number.isNaN(d.getTime())){
-        whenLabel.textContent = "Invalid time";
-        return;
-      }
+      if(Number.isNaN(d.getTime())){ whenLabel.textContent = "Invalid time"; return; }
       const prefix = isToday(d) ? "Today" : "Scheduled";
       whenLabel.textContent = `${prefix}: ${d.toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit" })}`;
     }
@@ -610,9 +663,7 @@
       } else if(option === "6pm"){
         d = new Date(now);
         d.setHours(18, 0, 0, 0);
-        if(d.getTime() <= now.getTime()){
-          d.setDate(d.getDate() + 1);
-        }
+        if(d.getTime() <= now.getTime()) d.setDate(d.getDate() + 1);
       } else if(option === "tom9"){
         d = new Date(now);
         d.setDate(d.getDate() + 1);
@@ -626,13 +677,71 @@
     }
 
     // ======================
-    // Add / Clear
+    // Edit sheet time shortcuts
+    // ======================
+    function clearEditChipSelection(){
+      equickChips.forEach(c => c.classList.remove("on"));
+    }
+
+    function setEditWhenLabel(){
+      const v = (editTime.value || "").trim();
+      if(!v){ editWhenLabel.textContent = "No time set"; return; }
+      const d = new Date(v);
+      if(Number.isNaN(d.getTime())){ editWhenLabel.textContent = "Invalid time"; return; }
+      const prefix = isToday(d) ? "Today" : "Scheduled";
+      editWhenLabel.textContent = `${prefix}: ${d.toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit" })}`;
+    }
+
+    function applyEditQuick(option){
+      clearEditChipSelection();
+      const chip = equickChips.find(c => c.dataset.equick === option);
+      if(chip) chip.classList.add("on");
+
+      if(option === "none"){
+        editTime.value = "";
+        setEditWhenLabel();
+        return;
+      }
+
+      const now = new Date();
+      let d;
+
+      if(option === "1h"){
+        d = new Date(now.getTime() + 60*60*1000);
+      } else if(option === "6pm"){
+        d = new Date(now);
+        d.setHours(18, 0, 0, 0);
+        if(d.getTime() <= now.getTime()) d.setDate(d.getDate() + 1);
+      } else if(option === "tom9"){
+        d = new Date(now);
+        d.setDate(d.getDate() + 1);
+        d.setHours(9, 0, 0, 0);
+      } else {
+        return;
+      }
+
+      editTime.value = toDatetimeLocalValue(d);
+      setEditWhenLabel();
+    }
+
+    // ======================
+    // Animations helpers
+    // ======================
+    function animateRemoveById(id){
+      const wrap = listEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+      if(!wrap){ return; }
+      wrap.classList.add("fadeOut");
+      setTimeout(() => { try{ wrap.remove(); }catch(e){} }, 200);
+    }
+
+    // ======================
+    // CRUD
     // ======================
     function addReminder(){
       const text = taskInput.value.trim();
       if(!text) return;
 
-      const when = (timeInput.value || "").trim(); // YYYY-MM-DDTHH:MM
+      const when = (timeInput.value || "").trim();
       const newItem = {
         id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
         text,
@@ -642,6 +751,7 @@
       };
 
       reminders.unshift(newItem);
+      lastCreatedId = newItem.id;
       saveReminders(reminders);
 
       taskInput.value = "";
@@ -654,10 +764,29 @@
       scheduleInAppNotification(newItem);
     }
 
+    function toggleDone(id){
+      const item = reminders.find(r => r.id === id);
+      if(!item) return;
+      item.done = !item.done;
+      saveReminders(reminders);
+      render(); // keeps sort behavior
+    }
+
+    function deleteReminder(id){
+      reminders = reminders.filter(r => r.id !== id);
+      saveReminders(reminders);
+      animateRemoveById(id);
+      setTimeout(() => render(), 210);
+    }
+
     function clearDone(){
+      const doneIds = reminders.filter(r => r.done).map(r => r.id);
       reminders = reminders.filter(r => !r.done);
       saveReminders(reminders);
-      render();
+
+      // animate removals quickly
+      doneIds.forEach(id => animateRemoveById(id));
+      setTimeout(() => render(), 220);
     }
 
     // ======================
@@ -685,14 +814,12 @@
       if(!Number.isFinite(ms) || ms <= 0) return;
 
       setTimeout(() => {
-        try{
-          new Notification("Lane Reminder", { body:item.text });
-        }catch(e){}
+        try{ new Notification("Lane Reminder", { body:item.text }); }catch(e){}
       }, ms);
     }
 
     // ======================
-    // Themes (button cycles)
+    // Themes
     // ======================
     function applyTheme(theme){
       document.documentElement.setAttribute("data-theme", theme);
@@ -701,18 +828,270 @@
 
     function loadTheme(){
       const saved = localStorage.getItem(THEME_KEY);
-      if(saved && themes.includes(saved)){
-        applyTheme(saved);
-      } else {
-        applyTheme("light");
-      }
+      if(saved && themes.includes(saved)) applyTheme(saved);
+      else applyTheme("light");
     }
 
     function nextTheme(){
       const current = document.documentElement.getAttribute("data-theme") || "light";
       const idx = themes.indexOf(current);
-      const next = themes[(idx + 1) % themes.length];
-      applyTheme(next);
+      applyTheme(themes[(idx + 1) % themes.length]);
+    }
+
+    // ======================
+    // Edit sheet
+    // ======================
+    function openSheetFor(id){
+      const item = reminders.find(r => r.id === id);
+      if(!item) return;
+
+      editingId = id;
+
+      editText.value = item.text || "";
+      editTime.value = item.when || "";
+      clearEditChipSelection();
+      setEditWhenLabel();
+
+      overlay.classList.add("open");
+      sheet.classList.add("open");
+
+      setTimeout(() => editText.focus(), 60);
+    }
+
+    function closeSheet(){
+      editingId = null;
+      overlay.classList.remove("open");
+      sheet.classList.remove("open");
+    }
+
+    function saveEdit(){
+      if(!editingId) return;
+      const item = reminders.find(r => r.id === editingId);
+      if(!item) return;
+
+      const newText = editText.value.trim();
+      if(!newText){
+        alert("Reminder text can’t be empty.");
+        return;
+      }
+
+      item.text = newText;
+      item.when = (editTime.value || "").trim();
+      saveReminders(reminders);
+
+      closeSheet();
+      render();
+    }
+
+    function deleteFromSheet(){
+      if(!editingId) return;
+      const id = editingId;
+      closeSheet();
+      deleteReminder(id);
+    }
+
+    // ======================
+    // Swipe gestures
+    // ======================
+    function setupSwipe(rowFrontEl, id){
+      let startX = 0;
+      let startY = 0;
+      let dx = 0;
+      let dragging = false;
+      let locked = false;
+
+      const THRESH = 88;   // how far to commit action
+      const MAX = 140;     // max drag visual
+
+      function setX(x){
+        rowFrontEl.style.transform = `translateX(${x}px)`;
+      }
+
+      function onStart(e){
+        if(locked) return;
+
+        const pt = (e.touches && e.touches[0]) ? e.touches[0] : e;
+        startX = pt.clientX;
+        startY = pt.clientY;
+        dx = 0;
+        dragging = false;
+        rowFrontEl.classList.add("dragging");
+      }
+
+      function onMove(e){
+        if(locked) return;
+
+        const pt = (e.touches && e.touches[0]) ? e.touches[0] : e;
+        const mx = pt.clientX - startX;
+        const my = pt.clientY - startY;
+
+        // don’t steal vertical scroll
+        if(!dragging){
+          if(Math.abs(my) > Math.abs(mx) && Math.abs(my) > 6){
+            // vertical scroll
+            rowFrontEl.classList.remove("dragging");
+            return;
+          }
+          if(Math.abs(mx) > 8){
+            dragging = true;
+          } else {
+            return;
+          }
+        }
+
+        e.preventDefault(); // stop page bounce while swiping
+        dx = Math.max(-MAX, Math.min(MAX, mx));
+        setX(dx);
+      }
+
+      function onEnd(){
+        rowFrontEl.classList.remove("dragging");
+
+        // if not really swiped, snap back
+        if(Math.abs(dx) < THRESH){
+          rowFrontEl.style.transition = "transform .18s ease";
+          setX(0);
+          rowFrontEl.style.transition = "";
+          dx = 0;
+          return;
+        }
+
+        // commit
+        locked = true;
+
+        if(dx > 0){
+          // swipe right -> complete toggle
+          rowFrontEl.style.transition = "transform .18s ease";
+          setX(MAX);
+          setTimeout(() => {
+            toggleDone(id);
+            // snap back after re-render, but just in case:
+            try{ setX(0); }catch(e){}
+            locked = false;
+          }, 120);
+        } else {
+          // swipe left -> delete
+          rowFrontEl.style.transition = "transform .18s ease";
+          setX(-MAX);
+          setTimeout(() => {
+            deleteReminder(id);
+            locked = false;
+          }, 140);
+        }
+      }
+
+      // Touch events (best on iOS)
+      rowFrontEl.addEventListener("touchstart", onStart, { passive:true });
+      rowFrontEl.addEventListener("touchmove", onMove, { passive:false });
+      rowFrontEl.addEventListener("touchend", onEnd, { passive:true });
+      rowFrontEl.addEventListener("touchcancel", onEnd, { passive:true });
+
+      // Also support mouse drag (optional)
+      rowFrontEl.addEventListener("mousedown", (e) => {
+        onStart(e);
+        const move = (ev) => onMove(ev);
+        const up = () => {
+          document.removeEventListener("mousemove", move);
+          document.removeEventListener("mouseup", up);
+          onEnd();
+        };
+        document.addEventListener("mousemove", move, { passive:false });
+        document.addEventListener("mouseup", up, { passive:true });
+      });
+    }
+
+    // ======================
+    // Render
+    // ======================
+    function render(){
+      listEl.innerHTML = "";
+
+      if(reminders.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "swipeWrap";
+        empty.innerHTML = `
+          <div class="rowFront">
+            <div class="left">
+              <div class="textWrap">
+                <p class="task" style="color:var(--muted);">No reminders yet. Add one 👆</p>
+                <p class="meta">Tip: swipe right to complete ✅, swipe left to delete 🗑️.</p>
+              </div>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(empty);
+        updateCount();
+        return;
+      }
+
+      const sorted = reminders
+        .slice()
+        .sort((a,b) => {
+          if(a.done !== b.done) return a.done ? 1 : -1;
+          const ta = a.when ? new Date(a.when).getTime() : Infinity;
+          const tb = b.when ? new Date(b.when).getTime() : Infinity;
+          if(ta !== tb) return ta - tb;
+          return b.created - a.created;
+        });
+
+      sorted.forEach(rem => {
+        const wrap = document.createElement("div");
+        wrap.className = "swipeWrap";
+        wrap.dataset.id = rem.id;
+
+        // Background shows both actions; color depends on swipe direction.
+        // We'll layer two backgrounds: green on left, red on right.
+        wrap.innerHTML = `
+          <div class="swipeBg bgDone">
+            <div class="leftAction">Done</div>
+            <div class="rightAction"></div>
+          </div>
+          <div class="swipeBg bgDel" style="justify-content:flex-end;">
+            <div class="leftAction"></div>
+            <div class="rightAction">Delete</div>
+          </div>
+
+          <div class="rowFront ${rem.id === lastCreatedId ? "animateIn" : ""}">
+            <div class="left">
+              <button class="check ${rem.done ? "on" : ""}" aria-label="Toggle done" type="button">
+                ${rem.done ? "✓" : ""}
+              </button>
+              <div class="textWrap">
+                <p class="task" style="${rem.done ? "text-decoration:line-through; color:var(--muted);" : ""}">
+                  ${escapeHtml(rem.text)}
+                </p>
+                <p class="meta">
+                  <span>${formatWhen(rem.when)}</span>
+                  ${rem.done ? "<span>Done</span>" : ""}
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const rowFront = wrap.querySelector(".rowFront");
+        const checkBtn = wrap.querySelector(".check");
+
+        // Tap to edit (but not when tapping the check)
+        rowFront.addEventListener("click", (e) => {
+          if(e.target === checkBtn) return;
+          openSheetFor(rem.id);
+        });
+
+        checkBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleDone(rem.id);
+        });
+
+        setupSwipe(rowFront, rem.id);
+
+        listEl.appendChild(wrap);
+      });
+
+      // reset last created after render so only the newest pops once
+      lastCreatedId = null;
+
+      updateCount();
     }
 
     // ======================
@@ -743,6 +1122,26 @@
     });
 
     themeBtn.addEventListener("click", nextTheme);
+
+    // Edit sheet events
+    overlay.addEventListener("click", closeSheet);
+    closeSheetBtn.addEventListener("click", closeSheet);
+    saveBtn.addEventListener("click", saveEdit);
+    deleteBtn.addEventListener("click", deleteFromSheet);
+
+    editTime.addEventListener("change", () => {
+      clearEditChipSelection();
+      setEditWhenLabel();
+    });
+
+    equickChips.forEach(chip => {
+      chip.addEventListener("click", () => applyEditQuick(chip.dataset.equick));
+    });
+
+    // Escape key support (desktop)
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && sheet.classList.contains("open")) closeSheet();
+    });
 
     // ======================
     // Boot
