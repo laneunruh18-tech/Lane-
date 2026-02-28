@@ -20,47 +20,71 @@
   <link rel="apple-touch-icon" href="/icon-192.png" />
 
   <style>
+    /* ============ THEMES (no wallpapers) ============ */
     :root{
-     /* Themes use CSS variables on :root */
-:root[data-theme="light"]{
-  --bg:#f2f2f7;
-  --card:#ffffff;
-  --text:#111;
-  --muted:rgba(17,17,17,.55);
-  --line:rgba(17,17,17,.08);
-}
+      --danger:#ff3b30;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --radius:18px;
+    }
 
-:root[data-theme="dark"]{
-  --bg:#0b0b0f;
-  --card:#14141b;
-  --text:#f5f5f7;
-  --muted:rgba(245,245,247,.55);
-  --line:rgba(245,245,247,.12);
-}
-
-:root[data-theme="charcoal"]{
-  --bg:#121214;
-  --card:#1c1c1f;
-  --text:#f2f2f4;
-  --muted:rgba(242,242,244,.55);
-  --line:rgba(242,242,244,.10);
-}
-
-:root[data-theme="ocean"]{
-  --bg:#07131f;
-  --card:#0f2237;
-  --text:#eaf3ff;
-  --muted:rgba(234,243,255,.55);
-  --line:rgba(234,243,255,.12);
-}
+    :root[data-theme="light"]{
       --bg:#f2f2f7;
       --card:#ffffff;
       --text:#111;
       --muted:rgba(17,17,17,.55);
       --line:rgba(17,17,17,.08);
-      --danger:#ff3b30;
-      --shadow:0 10px 30px rgba(0,0,0,.08);
-      --radius:18px;
+      --btn:#111;
+      --btnText:#fff;
+      --pillBg:rgba(0,0,0,.06);
+      --pillBorder:rgba(0,0,0,.06);
+      --chipBg:#fff;
+      --chipText:#111;
+      --chipBorder:var(--line);
+    }
+
+    :root[data-theme="dark"]{
+      --bg:#0b0b0f;
+      --card:#14141b;
+      --text:#f5f5f7;
+      --muted:rgba(245,245,247,.55);
+      --line:rgba(245,245,247,.12);
+      --btn:#f5f5f7;
+      --btnText:#0b0b0f;
+      --pillBg:rgba(245,245,247,.08);
+      --pillBorder:rgba(245,245,247,.10);
+      --chipBg:#14141b;
+      --chipText:#f5f5f7;
+      --chipBorder:rgba(245,245,247,.14);
+    }
+
+    :root[data-theme="charcoal"]{
+      --bg:#121214;
+      --card:#1c1c1f;
+      --text:#f2f2f4;
+      --muted:rgba(242,242,244,.55);
+      --line:rgba(242,242,244,.10);
+      --btn:#f2f2f4;
+      --btnText:#121214;
+      --pillBg:rgba(242,242,244,.08);
+      --pillBorder:rgba(242,242,244,.10);
+      --chipBg:#1c1c1f;
+      --chipText:#f2f2f4;
+      --chipBorder:rgba(242,242,244,.14);
+    }
+
+    :root[data-theme="ocean"]{
+      --bg:#07131f;
+      --card:#0f2237;
+      --text:#eaf3ff;
+      --muted:rgba(234,243,255,.55);
+      --line:rgba(234,243,255,.12);
+      --btn:#eaf3ff;
+      --btnText:#07131f;
+      --pillBg:rgba(234,243,255,.10);
+      --pillBorder:rgba(234,243,255,.12);
+      --chipBg:#0f2237;
+      --chipText:#eaf3ff;
+      --chipBorder:rgba(234,243,255,.16);
     }
 
     *{ box-sizing:border-box; }
@@ -128,7 +152,7 @@
       flex-wrap:wrap;
     }
 
-    input, select, button, textarea{
+    input, button{
       font:inherit;
     }
 
@@ -137,52 +161,66 @@
       padding:12px 12px;
       border-radius:14px;
       border:1px solid var(--line);
-      background:#fff;
+      background:var(--card);
+      color:var(--text);
       outline:none;
     }
 
     input[type="text"]:focus, input[type="datetime-local"]:focus{
-      border-color:rgba(0,0,0,.25);
+      border-color:rgba(127,127,127,.45);
     }
 
     .btn{
       border:none;
       border-radius:14px;
       padding:12px 14px;
-      background:#111;
-      color:#fff;
-      font-weight:600;
+      background:var(--btn);
+      color:var(--btnText);
+      font-weight:700;
       cursor:pointer;
       transition:transform .05s ease;
+      user-select:none;
     }
 
-    .btn:active{
-      transform:scale(.99);
-    }
+    .btn:active{ transform:scale(.99); }
 
     .btn.secondary{
-      background:#fff;
-      color:#111;
+      background:transparent;
+      color:var(--text);
       border:1px solid var(--line);
-      font-weight:600;
+      font-weight:700;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:var(--pillBg);
+      border:1px solid var(--pillBorder);
+      font-size:12px;
+      color:var(--text);
+      white-space:nowrap;
     }
 
     /* Quick time chips */
     .chip{
-      border:1px solid var(--line);
-      background:#fff;
+      border:1px solid var(--chipBorder);
+      background:var(--chipBg);
+      color:var(--chipText);
       border-radius:999px;
       padding:8px 10px;
-      font-weight:700;
+      font-weight:800;
       font-size:12px;
       cursor:pointer;
       user-select:none;
     }
 
     .chip.on{
-      background:#111;
-      color:#fff;
-      border-color:#111;
+      background:var(--btn);
+      color:var(--btnText);
+      border-color:var(--btn);
     }
 
     .whenLabel{
@@ -192,9 +230,7 @@
       white-space:nowrap;
     }
 
-    .list{
-      margin-top:14px;
-    }
+    .list{ margin-top:14px; }
 
     .item{
       display:flex;
@@ -204,10 +240,7 @@
       border-top:1px solid var(--line);
       align-items:flex-start;
     }
-
-    .item:first-child{
-      border-top:none;
-    }
+    .item:first-child{ border-top:none; }
 
     .left{
       display:flex;
@@ -221,25 +254,23 @@
       width:22px;
       height:22px;
       border-radius:7px;
-      border:1.5px solid rgba(0,0,0,.25);
+      border:1.5px solid rgba(127,127,127,.5);
       flex:0 0 auto;
       margin-top:2px;
       display:grid;
       place-items:center;
-      background:#fff;
+      background:transparent;
+      color:var(--text);
       cursor:pointer;
     }
 
     .check.on{
-      background:#111;
-      border-color:#111;
-      color:#fff;
+      background:var(--btn);
+      border-color:var(--btn);
+      color:var(--btnText);
     }
 
-    .textWrap{
-      min-width:0;
-      flex:1;
-    }
+    .textWrap{ min-width:0; flex:1; }
 
     .task{
       margin:0;
@@ -265,11 +296,13 @@
 
     .iconBtn{
       border:1px solid var(--line);
-      background:#fff;
+      background:transparent;
+      color:var(--text);
       border-radius:12px;
       padding:9px 10px;
       cursor:pointer;
-      font-weight:700;
+      font-weight:800;
+      user-select:none;
     }
 
     .iconBtn.danger{
@@ -282,9 +315,16 @@
       position:fixed;
       left:0; right:0; bottom:0;
       padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-      background:rgba(242,242,247,.8);
-      backdrop-filter:saturate(180%) blur(18px);
+      background:rgba(242,242,247,.82);
       border-top:1px solid var(--line);
+      backdrop-filter:saturate(180%) blur(18px);
+    }
+
+    /* Dark themes: dock needs a darker glass */
+    :root[data-theme="dark"] .dock,
+    :root[data-theme="charcoal"] .dock,
+    :root[data-theme="ocean"] .dock{
+      background:rgba(10,10,14,.72);
     }
 
     .dockInner{
@@ -294,21 +334,7 @@
       gap:10px;
     }
 
-    .dockInner .btn{
-      flex:1;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      background:rgba(0,0,0,.06);
-      border:1px solid rgba(0,0,0,.06);
-      font-size:12px;
-      color:rgba(0,0,0,.75);
-    }
+    .dockInner .btn{ flex:1; }
 
     @media (max-width:420px){
       h1{ font-size:26px; }
@@ -323,11 +349,12 @@
       <div class="title">
         <h1>Lane</h1>
         <p class="sub">Fast, clean reminders.</p>
-      </div> 
+      </div>
+
       <div class="row" style="gap:10px; justify-content:flex-end;">
-  <button class="btn secondary" id="themeBtn" type="button">Theme</button>
-  <div class="pill" id="countPill">0 active · 0 total</div>
-      
+        <button class="btn secondary" id="themeBtn" type="button">Theme</button>
+        <div class="pill" id="countPill">0 active · 0 total</div>
+      </div>
     </header>
 
     <div class="card">
@@ -342,7 +369,7 @@
           <button class="btn secondary" id="clearBtn" type="button" title="Clear completed">Clear Done</button>
         </div>
 
-        <!-- Quick time options -->
+        <!-- Better time input + quick options -->
         <div class="row" style="gap:8px;">
           <button class="chip" type="button" data-quick="none">No time</button>
           <button class="chip" type="button" data-quick="1h">In 1 hour</button>
@@ -364,8 +391,11 @@
   </div>
 
   <script>
-    // --- Storage helpers ---
-    const STORAGE_KEY = "lane_reminders_v1";
+    // ======================
+    // Storage
+    // ======================
+    const STORAGE_KEY = "lane_reminders_v2";
+    const THEME_KEY = "lane_theme_v1";
 
     function loadReminders(){
       try{
@@ -375,14 +405,18 @@
       }
     }
 
-    function saveReminders(reminders){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(reminders));
+    function saveReminders(items){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
 
-    // --- State ---
+    // ======================
+    // State
+    // ======================
     let reminders = loadReminders();
 
-    // --- Elements ---
+    // ======================
+    // Elements
+    // ======================
     const listEl = document.getElementById("list");
     const taskInput = document.getElementById("taskInput");
     const timeInput = document.getElementById("timeInput");
@@ -392,16 +426,24 @@
     const notifyBtn = document.getElementById("notifyBtn");
     const countPill = document.getElementById("countPill");
 
-    // Quick time UI
+    // Better time input
     const whenLabel = document.getElementById("whenLabel");
     const quickChips = Array.from(document.querySelectorAll(".chip[data-quick]"));
 
-    // --- Utilities ---
-    function formatWhen(iso){
-      if(!iso) return "No time set";
-      const d = new Date(iso);
-      if(Number.isNaN(d.getTime())) return "Invalid time";
-      return d.toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
+    // Themes
+    const themeBtn = document.getElementById("themeBtn");
+    const themes = ["light","dark","charcoal","ocean"];
+
+    // ======================
+    // Helpers
+    // ======================
+    function escapeHtml(str){
+      return str
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
     function updateCount(){
@@ -410,16 +452,27 @@
       countPill.textContent = `${active} active · ${total} total`;
     }
 
+    function formatWhen(iso){
+      if(!iso) return "No time set";
+      const d = new Date(iso);
+      if(Number.isNaN(d.getTime())) return "Invalid time";
+      return d.toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
+    }
+
+    // ======================
+    // Render
+    // ======================
     function render(){
       listEl.innerHTML = "";
+
       if(reminders.length === 0){
         const empty = document.createElement("div");
         empty.className = "item";
         empty.innerHTML = `
           <div class="left">
             <div class="textWrap">
-              <p class="task" style="color:rgba(0,0,0,.55);">No reminders yet. Add one 👆</p>
-              <p class="meta">Tip: tap “Tonight 6pm” or “Tomorrow 9am” to add fast.</p>
+              <p class="task" style="color:var(--muted);">No reminders yet. Add one 👆</p>
+              <p class="meta">Tip: tap “Tonight 6pm” or “Tomorrow 9am” to set time fast.</p>
             </div>
           </div>
         `;
@@ -443,11 +496,13 @@
 
           row.innerHTML = `
             <div class="left">
-              <button class="check ${rem.done ? "on" : ""}" aria-label="Toggle done">
+              <button class="check ${rem.done ? "on" : ""}" aria-label="Toggle done" type="button">
                 ${rem.done ? "✓" : ""}
               </button>
               <div class="textWrap">
-                <p class="task" style="${rem.done ? "text-decoration:line-through; color:rgba(0,0,0,.45);" : ""}">${escapeHtml(rem.text)}</p>
+                <p class="task" style="${rem.done ? "text-decoration:line-through; color:var(--muted);" : ""}">
+                  ${escapeHtml(rem.text)}
+                </p>
                 <p class="meta">
                   <span>${formatWhen(rem.when)}</span>
                   ${rem.done ? "<span>Done</span>" : ""}
@@ -462,7 +517,7 @@
 
           const checkBtn = row.querySelector(".check");
           const editBtn = row.querySelector(".iconBtn");
-          const delBtn = row.querySelector(".iconBtn.danger");
+          const delBtn  = row.querySelector(".iconBtn.danger");
 
           checkBtn.addEventListener("click", () => {
             rem.done = !rem.done;
@@ -470,7 +525,7 @@
             render();
           });
 
-          // Keeping simple edit prompts for now (we can upgrade to a bottom sheet later)
+          // Keep prompts for now (we can upgrade to an edit sheet later)
           editBtn.addEventListener("click", () => {
             const newText = prompt("Edit reminder", rem.text);
             if(newText === null) return;
@@ -496,10 +551,11 @@
       updateCount();
     }
 
-    // --- Better time input + quick options ---
+    // ======================
+    // Better time input + quick options
+    // ======================
     function pad2(n){ return String(n).padStart(2,"0"); }
 
-    // Convert Date -> <input type="datetime-local"> value (local time)
     function toDatetimeLocalValue(d){
       const yyyy = d.getFullYear();
       const mm = pad2(d.getMonth() + 1);
@@ -516,6 +572,10 @@
              d.getDate() === now.getDate();
     }
 
+    function clearChipSelection(){
+      quickChips.forEach(c => c.classList.remove("on"));
+    }
+
     function setWhenLabelFromInput(){
       const v = (timeInput.value || "").trim();
       if(!v){
@@ -529,10 +589,6 @@
       }
       const prefix = isToday(d) ? "Today" : "Scheduled";
       whenLabel.textContent = `${prefix}: ${d.toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit" })}`;
-    }
-
-    function clearChipSelection(){
-      quickChips.forEach(c => c.classList.remove("on"));
     }
 
     function applyQuick(option){
@@ -569,18 +625,20 @@
       setWhenLabelFromInput();
     }
 
-    // --- Add / Clear ---
+    // ======================
+    // Add / Clear
+    // ======================
     function addReminder(){
       const text = taskInput.value.trim();
       if(!text) return;
 
-      const when = (timeInput.value || "").trim(); // "YYYY-MM-DDTHH:MM"
+      const when = (timeInput.value || "").trim(); // YYYY-MM-DDTHH:MM
       const newItem = {
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+        id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
         text,
         when,
-        done: false,
-        created: Date.now()
+        done:false,
+        created:Date.now()
       };
 
       reminders.unshift(newItem);
@@ -602,7 +660,9 @@
       render();
     }
 
-    // --- Notifications (in-app only; fires when app is open) ---
+    // ======================
+    // Notifications (in-app only)
+    // ======================
     async function enableNotifications(){
       if(!("Notification" in window)){
         alert("Notifications aren’t supported in this browser.");
@@ -626,21 +686,38 @@
 
       setTimeout(() => {
         try{
-          new Notification("Lane Reminder", { body: item.text });
+          new Notification("Lane Reminder", { body:item.text });
         }catch(e){}
       }, ms);
     }
 
-    function escapeHtml(str){
-      return str
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    // ======================
+    // Themes (button cycles)
+    // ======================
+    function applyTheme(theme){
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem(THEME_KEY, theme);
     }
 
-    // --- Events ---
+    function loadTheme(){
+      const saved = localStorage.getItem(THEME_KEY);
+      if(saved && themes.includes(saved)){
+        applyTheme(saved);
+      } else {
+        applyTheme("light");
+      }
+    }
+
+    function nextTheme(){
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      const idx = themes.indexOf(current);
+      const next = themes[(idx + 1) % themes.length];
+      applyTheme(next);
+    }
+
+    // ======================
+    // Events
+    // ======================
     addBtn.addEventListener("click", addReminder);
 
     taskInput.addEventListener("keydown", (e) => {
@@ -656,20 +733,21 @@
 
     notifyBtn.addEventListener("click", enableNotifications);
 
-    // Manual time pick = unselect chips + update label
     timeInput.addEventListener("change", () => {
       clearChipSelection();
       setWhenLabelFromInput();
     });
 
-    // Quick chips
     quickChips.forEach(chip => {
-      chip.addEventListener("click", () => {
-        applyQuick(chip.dataset.quick);
-      });
+      chip.addEventListener("click", () => applyQuick(chip.dataset.quick));
     });
 
-    // First render
+    themeBtn.addEventListener("click", nextTheme);
+
+    // ======================
+    // Boot
+    // ======================
+    loadTheme();
     render();
     setWhenLabelFromInput();
   </script>
