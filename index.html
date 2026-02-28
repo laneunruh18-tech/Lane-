@@ -21,6 +21,38 @@
 
   <style>
     :root{
+     /* Themes use CSS variables on :root */
+:root[data-theme="light"]{
+  --bg:#f2f2f7;
+  --card:#ffffff;
+  --text:#111;
+  --muted:rgba(17,17,17,.55);
+  --line:rgba(17,17,17,.08);
+}
+
+:root[data-theme="dark"]{
+  --bg:#0b0b0f;
+  --card:#14141b;
+  --text:#f5f5f7;
+  --muted:rgba(245,245,247,.55);
+  --line:rgba(245,245,247,.12);
+}
+
+:root[data-theme="charcoal"]{
+  --bg:#121214;
+  --card:#1c1c1f;
+  --text:#f2f2f4;
+  --muted:rgba(242,242,244,.55);
+  --line:rgba(242,242,244,.10);
+}
+
+:root[data-theme="ocean"]{
+  --bg:#07131f;
+  --card:#0f2237;
+  --text:#eaf3ff;
+  --muted:rgba(234,243,255,.55);
+  --line:rgba(234,243,255,.12);
+}
       --bg:#f2f2f7;
       --card:#ffffff;
       --text:#111;
